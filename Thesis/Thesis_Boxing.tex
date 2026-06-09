@@ -1,0 +1,815 @@
+
+\makeatletter
+\let\kernel@xfloat\@xfloat
+\makeatother
+\documentclass[12pt]{ksthesis}
+
+
+\makeatletter
+\let\@xfloat\kernel@xfloat
+\def\@floatboxreset{%   
+  \reset@font
+  \linespread{1}\normalsize
+  \@setminipage}
+\makeatother   
+
+\usepackage[cmex10]{amsmath}
+%\usepackage{amsthm}
+%\usepackage{amssymb}
+%\usepackage{amsfonts}
+\usepackage{graphicx}
+%\usepackage{subfig}
+\usepackage{subcaption}
+%\usepackage{multirow}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+%\usepackage{booktabs}
+\usepackage{cite}
+%\usepackage[utf8]{inputenc}
+\usepackage{tabularx,ragged2e,booktabs,caption}
+\captionsetup[figure]{font=large, labelfont=normalsize} \captionsetup[table]{name=Table, labelsep=colon} \captionsetup[figure]{justification=centering}
+\captionsetup[table]{font=large, labelfont=normalsize} \captionsetup[table]{name=Table, labelsep=colon} \captionsetup[figure]{justification=centering}
+\captionsetup[table]{name=Table, labelsep=colon}
+\captionsetup[figure]{justification=centering}
+\usepackage{indentfirst}
+%\usepackage{array}
+\usepackage{float}
+%\usepackage{makecell}
+\usepackage[strings]{underscore}
+\usepackage{multirow}
+
+%\paperwidth=8.5in \paperheight=11in % letter paper
+\paperwidth=21cm \paperheight=29.6cm % A4 paper
+\usepackage[left=3.0cm, right=2.5cm, top=2.3cm, bottom=3.5cm]{geometry}
+
+
+\doublespace
+\title{National Cheng Kung University
+     \\Department of Electrical Engineering
+     \\Master Thesis}
+\author{Sung-Ho Chang}
+\phdthesis
+
+\Thesisspace
+\begin{document}
+
+\begin{preliminary} %---------- Preliminary ----------%
+
+\setcounter{page}{2} \large
+
+%------------------------- Abstract -------------------------%
+
+\begin{abstract}
+\begin{center}{\Large\textbf{
+Dynamic Routing for Enhanced Efficiency in Payment Channel Networks
+\vspace{0.3cm}\\
+}\vspace{0.4cm}
+}\end{center}
+
+\begin{center}{\large 
+Sung-Ho Chang\vspace{0.2cm} \\ 
+Department of Electrical Engineering \vspace{0.2cm}\\ 
+National Cheng Kung University \\
+}\end{center}
+
+\Thesisspace{\large 
+	
+    The rapid advancement of blockchain technology has revealed a fundamental scaling problem that constrains transaction throughput (TPS) severely. To address the problem, Payment Channel Networks (PCNs) have emerged as a Layer-2 solution for facilitating fast and low-cost off-chain payments that reduce the main blockchain load. However, the PCN implementation presents several technical challenges. The implementation involves identifying optimal paths in complex and dynamically changing networks with uneven fund distribution. Furthermore, strategically balancing transaction fees and payment success rates during routing presents a significant challenge. Effective routing is crucial because inefficient paths can lead to failed transactions, increased costs, and a diminished user experience. This study thoroughly investigates the PCN routing problem by analyzing existing algorithms' strengths and weaknesses to propose targeted improvement strategies. Ultimately, this thesis aims to enhance the performance and practical utility of payment channel networks. This work also provides a way for broader adoption of scalable blockchain solutions.
+	
+}
+
+\emph{\textbf{Keywords}}---blockchain, off-chain, payment channel network (PCN), routing
+
+\end{abstract}
+
+%------------------------- Acknowledgement -------------------------%
+%------------------------- Acknowledgement -------------------------%
+
+\begin{acknowledgements}
+
+\Thesisspace{\large
+	First and foremost, I would like to express my sincerest gratitude to my advisor, Kuo-Feng Ssu. During my academic journey at National Cheng Kung University, he has always encouraged me and guided my research direction. I am immensely grateful for his unwavering efforts, which have enabled me to complete this thesis.
+	
+	Thanks are also due to Professors Hewijin Christine Jiau and Chia-Hung Kao for their contributions to this research and for serving on my dissertation committee.
+	 
+	Thanks to the members of the Dependable Computing Laboratory, including Yu-Jung Chang, Tzi-Wei Ou, Fang-Yu Ko, Yu-Jen Yan, Yi-Hua Chang, You-Yao Chen, Yu-Wei Zheng, Yen-Wei Lin, Bo-Syun Ke, Xing-Ya Yang, Hao-Chen Liu, Gibson Teo, and Yin-Wei Chiu who gave me very helpful advice.
+	 
+	Finally, I would like to thank my family and friends for their support and company. Thanks for their precious time and encouragement.
+
+}
+\end{acknowledgements}
+
+
+%------------------------- Content Table, List -------------------------%
+
+\tableofcontents 
+\listoffigures 
+\listoftables 
+\clearpage
+
+\end{preliminary} %---------- Preliminary ----------%
+
+
+\begin{thesis}\large{
+
+%------------------------- Introduction -------------------------%
+\chapter{Introduction}
+
+     Since the introduction with Bitcoin in 2009~\cite{Nakamoto2008}, blockchain and cryptocurrency technologies have revolutionized financial systems that emerge as transformative network applications. In May 2025, Bitcoin’s market capitalization exceeds \$2.06 trillion USD~\cite{bitinfocharts}. In contrast to centralized financial systems, cryptocurrencies offer decentralization, transparent transaction traceability, and streamlined cross-border payments, so reliance on intermediaries can be reduced. However, the decentralized ledger of blockchain technology necessitates consensus among distributed nodes, which is achieved through broadcasting transactions across the network. This process incurs significant storage and communication overhead, so Bitcoin’s throughput is limited to approximately 7 transactions per second (TPS)~\cite{Scalability_of_Blockchain}. This scalability bottleneck demonstrates insufficiency for high-frequency retail in the payment systems such as Visa.
+     
+    \begin{sloppypar}
+    To overcome the limitations, Layer-2 scaling solutions have emerged to enable off-chain transactions while preserving blockchain’s security guarantees. Payment Channel Networks (PCNs), such as Bitcoin’s Lightning Network~\cite{lightningnetwork}, Ethereum’s Raiden Network~\cite{raidennetwork}, and Celer Network~\cite{celer2018whitepaper}, are prominent examples. A PCN comprises interconnected payment channels. Each channel is established on-chain via a 2-of-2 multi-signature address~\cite{BitcoinWiki2024} that requires two transacting nodes to deposit cryptocurrency to provide channel liquidity. These channels enable off-chain transactions. Payments are transferred directly in the channel, so on chain verification can be bypassed for better efficiency and lower fees. Within a PCN, multi-hop transactions allow funds to traverse multiple channels to reach a recipient, even in the absence of a direct channel. Hash Time Locked Contracts (HTLCs)~\cite{BitcoinWikiHTLC2024}, which combine cryptographic hashes with timelocks, ensure security in these multi-hop transfers by preventing intermediaries from withholding funds. Upon channel closure, its final state is settled on-chain, and the funds are released. The off-chain approach supports scalable and low-cost cryptocurrency payments, so the PCN has become a promising solution for everyday transactions.
+    \end{sloppypar}
+
+    One of the primary challenges for current PCNs is designing efficient transaction routing schemes. When multiple transactions occur concurrently in the network, the system must identify feasible paths for each pair of sender and receiver nodes. Furthermore, it must ensure that all channels along the selected payment path possess sufficient balance to complete the transaction. In fact, within PCNs, the balances of individual payment channels are highly dynamic. Each new transaction updates the remaining amount within the affected channels. A chosen path for a transaction may fail due to insufficient current channel balance.
+        
+    This thesis introduces a novel two-phase routing algorithm for improving transaction efficiency, success rates, and cost-effectiveness within PCNs. The algorithm leverages either local or global network information to select an initial payment path, based on the estimated success probability and transaction fees.
+    
+    Unlike existing methods that probe paths sequentially, this algorithm concurrently probes alternative paths during the initial attempt. Should the initial payment fail, the algorithm will use the probing results to select an optimal path for retransmitting the remaining amount with sufficient channel capacity and lower fees. This two-phase strategy improves latency, success rates, and costs.
+    
+    The thesis describes an approach to enabling scalable and reliable cryptocurrency payments. With initial routing and failure recovery, the algorithm tackles real-world challenges, such as high transaction volumes in retail or cross-border payments, where low latency and high reliability are critical.
+    
+    The main contributions of this thesis are:
+    
+    \begin{enumerate}
+    	\item \textbf{A novel two-phase routing algorithm} that integrates initial path selection with parallel probing of alternative paths provides real-time feedback for efficient retries.
+    	\item \textbf{A path scoring mechanism}, which evaluates initial paths based on both success probability and transaction fees.
+    	\item \textbf{A smart retry mechanism} utilizes probing results to select optimal paths for retransmission for failed payments.
+    	\item \textbf{An empirical validation framework} that proposes evaluation through simulations on realistic PCN topologies to demonstrate the performance of the algorithm.
+    \end{enumerate}
+    
+    By combining efficient initial routing with intelligent failure recovery, this algorithm can enhance PCN performance and provide the way for scalable cryptocurrency transactions in complex and dynamic environments.
+
+%------------------------- Related Works -------------------------%
+\chapter{Related Work}\label{Chap:Related}
+	
+	Routing within PCNs presents a significant research challenge, primarily due to limited channel capacity and highly dynamic network conditions. Most current routing algorithms necessitate that the initiating node possesses global network topology information to compute end-to-end payment paths from sender to receiver. These methods typically rely on path probing to assess residual channel capacities before transaction execution.
+
+    For instance, Deter-Pay \cite{Deter-Pay} employs a greedy strategy and probes to select feasible paths with the lowest fees. Similarly, CoinExpress \cite{CoinExpress} and Flash \cite{Flash} also leverage probing-based approaches. Flash segments large payments into multiple sub-payments and probes channel states to acquire necessary information prior to execution. EPA-Route \cite{EPA-Route} further proposes a routing and probing mechanism that simultaneously balances high success rates with low transaction fees. EPA-Route uses local routing tables at each node to identify potential paths. It then filters and prunes these paths based on hop feasibility. After path discovery, EPA-Route aggregates multiple valid paths. It segments payments into sub-payments and distributes them across these paths to enhance overall efficiency. However, this ``probe-then-pay" approach inherently introduces substantial transaction delays, as routing decisions are contingent upon the completion of the probing process.
+    
+	Beyond probe-based methods, several studies~\cite{Fence,MPCN-RP,Fee_Adjustment} concentrate on enhancing routing efficiency and channel longevity through dynamic fee adjustments. The core idea is to increase fees for unbalanced or heavily utilized channels while lowering fees for balanced channels. This guides traffic away from potential bottleneck paths. Fence~\cite{Fence} exemplifies this approach by setting strategic fee rates. This prevents rapid fund depletion on one side of a channel due to asymmetric payment flows. PCN sustainability and long-term throughput are enhanced. MPCN-RP~\cite{MPCN-RP} further incorporates diverse transaction costs. The system integrates channel imbalance and hop fees into its routing model to identify paths optimized for both total cost and path length. Despite the mechanisms for guiding traffic and balancing funds, the implementation encounters challenges. Frequent fee fluctuations introduce uncertainty in transaction costs. This is particularly detrimental to high-frequency or time-sensitive applications. Additionally, malicious nodes could potentially manipulate fees to disrupt normal routing, and then security risks are introduced.
+
+	Current literature primarily concentrates on enhancing initial payment success rates. Methods, such as AutoTune~\cite{AutoTune}, PACO~\cite{PACO}, and VEIN~\cite{VEIN}, aim to enhance path selection efficiency and resource utilization. Despite advancements in routing design, the systematic exploration of retransmission strategies following payment failures remains limited. This limitation is particularly critical given the constraints of limited channel capacity.
+
+	Existing research has made notable strides in enhancing initial transaction success rates and fee adjustment strategies. The reliance on real-time channel state probing introduces substantial delays. Furthermore, the recovery and retransmission strategies for payment failures remain a critical issue. This study aims to develop low-latency routing mechanisms and robust retransmission protocols for enhancing the scalability and reliability of PCNs.
+
+%------------------------- Problem Formulation -------------------------%
+\chapter{System Model}\label{Chap:Problem Formulation}
+
+	This chapter introduces the system model of the PCN, including its structure, routing mechanisms, and related assumptions.
+
+\section{System Overview}
+	
+    The proposed system aims to significantly enhance the overall transaction success rate, reduce transaction fees, and minimize transaction latency. Transaction latency is specifically defined as the duration from the initiation of a transaction request until either the complete delivery of funds to the recipient or the system's confirmation of failure.
+    
+    Upon receiving a transaction request, the system employs a routing algorithm to identify optimal payment pathways. A transaction is considered successful only when the entire requested amount reaches the recipient. This algorithm is designed to increase the success rate while carefully balancing transaction cost and latency, ensuring transactions complete with reduced fees without compromising reliability or incurring substantial delays.
+    
+    Figure~\ref{fig:SystemOverview} depicts an overview of the system. The routing algorithm comprises three primary components: Routing Table Establishment, Route Analysis with Parallel Payment Probing, and Failure Handling. Each component will be elaborated upon in subsequent sections.
+
+        \begin{figure}[t]
+          \centering
+          \includegraphics[width=0.95\textwidth]{./figures/SystemOverview.eps}
+          \caption{System overview.}
+          \label{fig:SystemOverview}
+        \end{figure}
+
+\section{System Assumption}
+
+	The PCN serves as a Layer-2 solution designed to enhance the scalability of blockchain transactions and reduce latency. The core concept involves establishing payment channels that enable two parties to perform multiple off-chain transactions without submitting each transaction to the underlying blockchain. Individual channels are interconnected to form a network. This network enables efficient value transfer across multiple nodes. To incentivize nodes to participate in routing services, most protocols implement a routing fee mechanism, which allows intermediary nodes to earn a reward for forwarding transactions. This section will introduce the concepts of payment channels, the structure of the PCN, and the design of routing fees in subsequent subsections.
+
+
+	\noindent\textbf{Payment Channels:} A payment channel is jointly established by two participants through the deployment of a smart contract. Both parties deposit funds into a \mbox{2-of-2} multi-signature wallet that serves as the basis of the channel. The opening and closing of the channel are recorded on the underlying blockchain, and all transactions during the channel’s lifetime are conducted off-chain. This multi-signature wallet facilitates a bidirectional payment channel. Each participant holds a certain amount of available balance. In each transaction, one party’s balance decreases while the other party’s balance increases by the corresponding amount.
+
+	As depicted in Figure~\ref{fig:Channels_a}, Alice and Bob deposit funds into the payment channel. Subsequently, Alice sends 1 satoshi to Bob, as illustrated in Figure~\ref{fig:Channels_b}. Following this transaction, as shown in Figure~\ref{fig:Channels_c}, Alice’s balance decreases by 1 satoshi, and Bob’s balance increases by 1 satoshi, so completing an off-chain transfer of value is completed.
+
+
+	\noindent\textbf{Payment Channel Network:} A payment channel network comprises multiple payment channels and participating users. In instances where no direct payment channel exists between a sender and a receiver, funds can be routed through intermediate nodes. As depicted in Figure~\ref{fig:Payment_Channel_Network}, nodes within the network can forward funds to other nodes via connected intermediate nodes and their corresponding payment channels.
+
+	This study assumes that the network topology of the PCN is periodically disseminated and updated among nodes using a gossip protocol. Each node can access information, such as the overall network topology, the fee models of other nodes, and the total capacity of payment channels. However, the real-time channel balances are considered private and cannot be directly obtained.
+
+	\noindent\textbf{Transaction Fee:} In a PCN, the transaction fee typically comprises two components: a \textit{base fee} and a \textit{proportional fee}. The total transaction fee model can be expressed as follows.
+
+	Let each path $q$ be defined as a sequence of adjacent payment channels $(i, j)$. For each channel $(i,j)$, the following are defined:
+
+	\begin{itemize}
+		\item $\beta_{i,j}$: the \textit{base fee} charged by channel $(i,j)$;
+		\item $\gamma_{i,j}$: the \textit{proportional fee rate} set by channel $(i,j)$.
+	\end{itemize}
+
+	Then, the total fee incurred by sending an amount $z_{\rho,q}$ along path $q$ is given by:
+
+	\begin{equation}
+	C(z_{\rho,q}, q) = \sum_{(i,j) \in q} \left( \beta_{i,j} + \gamma_{i,j} \cdot z_{\rho,q} \right)
+	\tag{1}
+	\end{equation}
+
+	This model encapsulates the fact that the total transaction fee for a sub-transaction is contingent upon the number of hops along the selected path, the fee configuration of each channel, and the amount being transferred. The model is widely adopted in Layer-2 payment protocols, including the Lightning Network.
+	
+	\vspace{4mm}
+	\begin{figure*}[h!]
+		\centering
+		\begin{subfigure}{0.45\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{./figures/Payment_Channels_a.eps} 
+			\caption{}
+			\label{fig:Channels_a}
+		\end{subfigure}%
+		\hfill%
+		\begin{subfigure}{0.45\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{./figures/Payment_Channels_b.eps} 
+			\caption{}
+			\label{fig:Channels_b}
+		\end{subfigure}%
+		\hfill%
+		\begin{subfigure}{0.45\textwidth}
+			\centering
+			\includegraphics[width=\linewidth]{./figures/Payment_Channels_c.eps}
+			\caption{}
+			\label{fig:Channels_c}
+		\end{subfigure}
+		\caption{Example of the payment channel.}
+		\label{fig:payment_channel}
+	\end{figure*}
+	
+	\begin{figure}[t]
+	\centering
+	\includegraphics[width=\textwidth]{./figures/Payment_Channel_Network.eps}
+	\caption{Payment channel network.} 
+	\label{fig:Payment_Channel_Network}
+	\vspace{2mm}
+	\end{figure}
+	
+\section{Problem Formulation}
+
+	This study investigates a PCN environment where multiple transactions execute concurrently within a fixed time interval T. Each node within the network may process multiple incoming fund transfer requests in parallel. A key operational characteristic is that intermediate channels involved in a transaction remain locked until the fund transfer is finalized. Given the dynamic and unpredictable nature of individual channel balances, it is challenging to ascertain whether a path possesses sufficient liquidity using only predefined or static information. To address this challenge, a routing algorithm is proposed to optimize path selection and transaction amount allocation within such a dynamic environment.
+
+	Let $\mathcal{R}$ denote the set of all transaction requests generated during the interval $T$. Each transaction request $\rho \in \mathcal{R}$ is represented as a tuple $\rho = (u_{\rho}, v_{\rho}, a_{\rho}, t_{\rho})$, where $u_{\rho}$ and $v_{\rho}$ denote the source and destination nodes, respectively. $a_{\rho}$ is the transaction amount and $t_{\rho}$ is the initiation time.
+
+	For each transaction $\rho$, a set of candidate paths $\mathcal{Q}^{\rho}$ connecting $u_{\rho}$ to $v_{\rho}$ is assumed. Each path $q \in \mathcal{Q}^{\rho}$ is defined as $q = (u_{\rho}, v^{q}_{1}, v^{q}_{2}, \dots, v^{q}_{l}, v_{\rho})$, where $v^{q}_{1}, v^{q}_{2}, \dots, v^{q}_{l}$ are intermediate nodes along the path.
+
+	The proposed routing algorithm supports multipath payments. A single transaction is segmented into multiple sub-transactions routed through distinct paths. Let $z_{\rho,q}$ denote the sub-amount of transaction $\rho$ assigned to path $q$. A binary variable $\delta_{\rho} \in \{0,1\}$ is defined to indicate whether transaction $\rho$ is successfully completed ($\delta_{\rho} = 1$) or not ($\delta_{\rho} = 0$).
+
+	The optimization problem is formulated with the following objectives:
+
+	\begin{enumerate}
+		\item \textbf{Maximize the total amount of successfully completed transactions.} As delineated in Equation~\ref{obj_max_amount}, this objective seeks to prioritize the successful completion of transactions for increasing the total transferred amounts.
+		\begin{equation}
+		\label{obj_max_amount}
+		\max \sum_{\rho \in \mathcal{R}} \sum_{q \in \mathcal{Q}^{\rho}} z_{\rho, q} \cdot \delta_{\rho}
+		\end{equation}
+
+		\item \textbf{Minimize the total transaction fees.} As presented in Equation~\ref{eq:obj_min_fee}, this objective aims to reduce the total cost incurred from routing payments. $C(z_{\rho,q}, q)$ denotes the fee for sending amount $z_{\rho,q}$ along path $q$.
+		\begin{equation}
+		\label{eq:obj_min_fee}
+		\min \sum_{\rho \in \mathcal{R}} \sum_{q \in \mathcal{Q}^{\rho}} C(z_{\rho, q}, q)
+		\end{equation}
+	\end{enumerate}
+
+	\subsection*{Constraints}
+
+	The optimization is subject to the following constraints:
+
+	\begin{enumerate}
+		\item \textbf{Transaction fulfillment constraint.} As expressed in Equation~\ref{eq:con_full_payment}, the total allocated sub-amounts for each transaction must meet or exceed its required amount.
+		\begin{equation}
+		\label{eq:con_full_payment}
+		\sum_{q \in \mathcal{Q}^{\rho}} z_{\rho,q} \geq a_{\rho} \cdot \delta_{\rho}, \quad \forall \rho \in \mathcal{R}
+		\end{equation}
+
+		\item \textbf{Channel capacity constraint.} For each channel $(i,j)$ with available capacity $cap_{i,j}$, the aggregate flow through the channel from all transactions must not exceed this capacity. The variable $z_{\rho,q}$ is included in the sum if $(i,j) \in q$.
+		\begin{equation}
+		\label{eq:con_capacity}
+		\sum_{\rho \in \mathcal{R}} \sum_{q \in \mathcal{Q}^{\rho} : (i,j) \in q} z_{\rho,q} \leq cap_{i,j}, \quad \forall (i,j) \in E
+		\end{equation}
+
+		\item \textbf{Non-negativity constraint.} All allocated sub-transaction amounts must be non-negative.
+		\begin{equation}
+		\label{eq:con_non_negative}	
+		z_{\rho,q} \geq 0, \quad \forall \rho \in \mathcal{R},~ q \in \mathcal{Q}^{\rho}
+		\end{equation}
+
+		\item \textbf{Binary success indicator.} The transaction success variable $\delta_{\rho}$ is constrained to be binary.
+		\begin{equation}
+		\label{eq:con_binary_delta}
+		\delta_{\rho} \in \{0,1\}, \quad \forall \rho \in \mathcal{R}
+		\end{equation}
+	\end{enumerate}
+	
+%------------------------- Proposed Solution -------------------------%
+\chapter{Proposed Solution}\label{Chap:Proposed Solution}
+	
+    This chapter provides a detailed explanation of the routing algorithm designed for PCN. The algorithm consists of three components: Routing Table Establishment, Route Analysis and Parallel Payment and Probing, and Failed Handling. The complete system architecture is illustrated in Figure~\ref{fig:system_artch}.
+
+	\begin{figure*}[]
+		\centering
+		\includegraphics[width=1\textwidth]{./figures/sysarc.pdf
+}
+		\caption{\large Flow chart of the system.} 
+		\label{fig:system_artch}
+	\end{figure*}
+    
+\section{Notation and Definitions}
+
+    Table~\ref{tab:notation} lists the primary symbols used throughout the proposed routing algorithm. These notations are essential for the detailed operations in each phase.
+    
+ 
+    \begin{table}[htbp] 
+        \caption{List of Notations} 
+        \label{tab:notation} 
+        \centering 
+        \begin{tabularx}{\linewidth}{l X} 
+            \toprule
+            \textbf{Symbol} & \textbf{Description} \\
+            \midrule
+            $p$ & A specific path in the payment network \\
+            $p_i$ & An individual path (often indexed, e.g., $p_1, p_2, \ldots$) \\
+            $Y(p)$ & Capacity of path $p$ \\
+            $A$ & Total transaction amount to be split \\
+            $A_i$ & Amount of the transaction allocated to path $p_i$ \\
+            $k$ & Maximum number of paths to use for splitting, or number of top paths to probe \\
+            $\mathcal{P}$ & Set of all candidate paths for the transaction \\
+            $\mathcal{S}$ & Subset of currently selected paths from $\mathcal{P}$ \\
+            $\text{TotalFee}(p)$ & Total forwarding cost for path $p$ \\
+            $\alpha_{[v_i, v_j]}$ & Base fee for channel $(v_i, v_j)$ \\
+            $\beta_{[v_i, v_j]}$ & Fee rate for channel $(v_i, v_j)$ \\
+            $G$ & The current state of the network graph \\
+            $A_{rem}$ & Remaining transaction amount that needs to be paid \\
+            $\mathcal{R}$ & Set of successful probing results, each containing a path $p_i$ and its confirmed capacity $Y(p_i)$ \\
+            $\gamma$ & Splitting threshold \\ 
+            \bottomrule 
+        \end{tabularx}
+    \end{table}
+
+\section{Routing Table Establishment}
+
+    \begin{algorithm}[]
+        \caption{Candidate Path Computation from Node $v_s$}
+        \label{alg:candidate_paths}
+        \DontPrintSemicolon
+    
+        \KwIn{\;
+            Payment channel graph $G = (V, E)$; \;
+            Channel capacities $c_{[v_i, v_j]}$, fees $\alpha_{[v_i, v_j]}$, $\beta_{[v_i, v_j]}$; \;
+            Source node $v_s$.
+        }
+        \KwOut{\;
+            Edge-disjoint candidate paths $\{\mathcal{P}_{v_s \to v_d} \mid v_d \in V, v_d \neq v_s\}$.
+        }
+    
+        \SetKwInOut{Define}{Definition}
+        \Define{\;
+            $\mathcal{P}_{v_s \to v_d}$: Set of edge-disjoint candidate paths from $v_s$ to $v_d$. \;
+            $G^{res}$: Residual graph with updated capacities after each path discovery. \;
+            $p$: A path from $v_s$ to $v_d$, found via BFS. \;
+            $\text{TotalFee}(p) = \sum_{(v_i, v_j) \in p} \alpha_{[v_i, v_j]} + \beta_{[v_i, v_j]} \cdot A$: Forwarding cost of $p$ for amount $A$.
+        }
+    
+        \ForEach{$v_d \in V, v_d \neq v_s$}{
+            Initialize residual graph $G^{res}$ with capacities $c_{[v_i, v_j]}$\;
+            $\mathcal{P}_{v_s \to v_d} \gets \emptyset$\;
+        
+            \While{a path $p$ exists from $v_s$ to $v_d$ in $G^{res}$ via BFS}{
+                Let $p = \{v_s, \ldots, v_d\}$\;
+                $Y(p) \gets \min\{c_{[v_i, v_j]} \mid (v_i, v_j) \in p\}$\;
+        
+                \If{$Y(p) > 0$}{
+                    $A \gets Y(p)$\;
+                    $\alpha(p) \gets \sum\limits_{(v_i, v_j) \in p} \alpha_{[v_i, v_j]}$\;
+                    $\beta(p) \gets \sum\limits_{(v_i, v_j) \in p} \beta_{[v_i, v_j]}$\;
+                    Add $(p, A, \alpha(p), \beta(p))$ to $\mathcal{P}_{v_s \to v_d}$\;
+        
+                    \ForEach{$(v_i, v_j) \in p$}{
+                        $c_{[v_i, v_j]} \gets c_{[v_i, v_j]} - A$\;
+                        $c_{[v_j, v_i]} \gets c_{[v_j, v_i]} + A$\;
+                    }
+                }
+                \Else{
+                    Identify bottleneck edge $(v_b, v_b')$ on $p$ with minimal capacity\;
+                    Set $c_{[v_b, v_b']} \gets 0$ in $G^{res}$\;
+                }
+        
+                Remove all edges $(v_i, v_j)$ from $G^{res}$ where $c_{[v_i, v_j]} \leq 0$\;
+            }
+        }
+        \Return{$\{\mathcal{P}_{v_s \to v_d} \mid v_d \in V, v_d \neq v_s\}$}
+        \end{algorithm}
+    
+    This study assumes that each node within the Payment Channel Network (PCN) can acquire the overall network topology and initial channel capacities via the gossip protocol. In the initial phase of the system, a routing table is constructed for each node by executing the candidate path computation process defined in Algorithm~\ref{alg:candidate_paths}.
+    
+    To discover multiple candidate paths to each destination node $v_d$ (where $v_d \neq v_s$), this study proposes a breadth-first search (BFS)-based edge-disjoint path computation algorithm. The algorithm first initializes a residual graph based on the original channel capacities $c_{[v_i, v_j]}$, and then repeatedly performs BFS to identify feasible paths from the source node $v_s$ to $v_d$.
+    
+    Once a path $p$ is identified, the algorithm calculates the maximum transferable amount $Y(p)$ along the path, which is defined as the minimum residual capacity among all edges on the path. If $Y(p) > 0$, the algorithm further computes the total base fee and total fee rate along the path, and then stores the path along with its attributes as a candidate path.
+    
+    The residual graph is subsequently updated based on $Y(p)$. The capacity of each forward edge is reduced by $Y(p)$, while the capacity of the corresponding reverse edge is increased by $Y(p)$ to support potential backward transmissions. If $Y(p) = 0$, the algorithm identifies the bottleneck edge and removes it from the residual graph to facilitate the discovery of alternative paths.
+
+
+
+
+\section{Phase I: Routing Analysis with Concurrent Payment and Probing}
+
+
+\subsection{Path Scoring}
+
+    The algorithm proposes a composite scoring function to prioritize candidate paths for a given transaction request. Each path $p$ is evaluated based on three criteria: channel capacity, transaction fee, and channel usage frequency. The scoring function is defined as follows:
+
+    \begin{equation}
+    \label{eq:path_scores}
+    \text{Score}(p) = \alpha \cdot \widetilde{Y(p)} - \beta \cdot \widetilde{F(p)} - \gamma \cdot \widetilde{U(p)}
+    \end{equation}
+    
+    where:
+    \begin{itemize}
+        \item $\widetilde{Y(p)}$ is the normalized maximum payable amount along path $p$ (i.e., normalized $Y(p)$);
+        \item $\widetilde{F(p)}$ is the normalized total forwarding fee to send amount $A$ along $p$, computed as $\sum\limits_{(v_i,v_j) \in p} \left( \alpha_{[v_i,v_j]} + \beta_{[v_i,v_j]} \cdot A \right)$;
+        \item $\widetilde{U(p)}$ is the normalized maximum usage frequency among all channels on path $p$, defined as $\max\limits_{(v_i,v_j) \in p} U_{[v_i, v_j]}$;
+        \item $\alpha, \beta, \gamma$ are user-defined weighting parameters that control the trade-off between capacity, fee, and congestion.
+    \end{itemize}
+
+    
+    Each candidate path is assigned a score utilizing Equation~\ref{eq:path_scores}. All paths are subsequently sorted in descending order of their scores. The top-ranked paths are preferred for subsequent payment and probing procedures.
+
+\subsection{Channel Usage Frequency Update Mechanism}
+
+    To quantify the usage frequency of each channel, as referenced in the path scoring model, each node within the system locally maintains historical records of its owned channels. Whenever a channel $(u, v)$ is utilized for a transaction, the node updates its usage frequency based on the elapsed time since its last usage. Specifically, an \textit{Exponentially Weighted Moving Average (EWMA)} is applied to emphasize recent activity and to adapt to temporal usage dynamics.
+    
+    This mechanism enables the system to reflect the real-time activeness of each channel and to incorporate such information into routing decisions. The frequency update procedure is formally described in Algorithm~\ref{alg:freq_update}.
+    
+    \begin{algorithm}[htbp]
+        \caption{Update Usage Frequency of Channel $U_{[v_i, v_j]}$}
+        \label{alg:freq_update}
+        \DontPrintSemicolon
+        
+        \KwIn{\;
+            Channel $(v_i, v_j)$; \;
+            EWMA update parameter $\lambda \in (0, 1)$
+        }
+        \KwOut{\;
+            Updated $U_{[v_i, v_j]}$ and last-used timestamp
+        }
+        
+        \SetKwInOut{Define}{Definition}
+        \Define{\;
+            $U_{[v_i, v_j]}$: Estimated usage frequency of channel $(v_i, v_j)$ based on Exponentially Weighted Moving Average (EWMA). \;
+            $last\_used_{[v_i, v_j]}$: The last time channel $(v_i, v_j)$ was used. \;
+            $\lambda$: Smoothing factor for EWMA, balancing recent usage and historical average.
+        }
+        
+        $now \gets$ current system time\;
+        
+        \If{channel $(v_i, v_j)$ was previously used}{
+            $\Delta t \gets now - last\_used_{[v_i, v_j]}$\;
+            \If{$\Delta t > 0$}{
+                $U_{[v_i, v_j]} \gets \lambda \cdot \frac{1}{\Delta t} + (1 - \lambda) \cdot U_{[v_i, v_j]}$\;
+            }
+        }
+        \Else{
+            $U_{[v_i, v_j]} \gets 1$ \tcp*{Initialize on first use}
+        }
+        
+        $last\_used_{[v_i, v_j]} \gets now$\;
+        
+    \end{algorithm}
+
+
+
+\subsection{Trusted Nodes for Real-Time Channel State Inquiry}
+
+    To enhance the timeliness and accuracy of channel state information, the proposed system introduces the concept of \textit{trusted nodes}. A trusted node refers to a counterparty that has exhibited a frequent transaction history with the sender. In practice, the trusted nodes may be individuals or merchants with whom the user has established trust, such as friends, family, or business partners.
+    
+    The system offers an API interface that enables the sender to query trusted nodes in real-time for up-to-date information regarding the residual capacity and usage frequency of specific payment channels. This mechanism complements the static topology disseminated through the gossip protocol. Routing decisions can be made by the more updated information.
+    
+    By leveraging trusted nodes, the sender can enhance the quality of path selection and traffic distribution. Payment success rates and overall routing efficiency can be improved.
+
+\subsection{Adaptive Multi-Path Payment Splitting Mechanism}
+    An adaptive multi-path splitting mechanism is designed to efficiently allocate payment amounts across multiple paths, as presented in Algorithm~\ref{alg:adaptive_split}. The algorithm dynamically assigns portions of the total payment to candidate paths based on their maximum transferable capacities. The algorithm also ensures that the minimum success rate among the selected paths does not fall below the system-defined threshold $\theta$.
+
+    \begin{algorithm}[t]
+        \caption{Adaptive Multi-Path Payment Splitting}
+        \label{alg:adaptive_split}
+        \DontPrintSemicolon % This is often useful to remove semicolons at the end of lines
+        
+        \KwIn{\;
+            Candidate paths $\mathcal{P} = \{p_1, p_2, \dots\}$ with capacities $Y(p)$; \\
+            Transaction amount $A$; \\
+            Minimum success rate threshold $\theta$; \\
+            Maximum path count $k$
+        }
+        \KwOut{\;
+            Split amounts $\{A_i \mid p_i \in \mathcal{S}\}$
+        }
+        
+        \SetKwInOut{Define}{Definition} % Define the 'Definition' block
+        \Define{\;
+            $\theta$: Minimum success rate threshold for path selection\;
+            $\mathcal{S}$: Subset of selected paths from $\mathcal{P}$\;
+            $T$: Total capacity of the currently selected paths in $\mathcal{S}$\;
+            $\rho$: Minimum remaining capacity ratio among selected paths\;
+        }
+        
+        Initialize $\mathcal{S} \gets \{p_1\}$\;
+        
+        \While{True}{
+            $T \gets \sum\limits_{p_i \in \mathcal{S}} Y(p_i)$\;
+            \If{$T = 0$}{
+                \textbf{raise} error: insufficient capacity\;
+            }
+        
+            \ForEach{$p_i \in \mathcal{S}$}{
+                $A_i \gets A \cdot \frac{Y(p_i)}{T}$\;
+            }
+        
+            $\rho \gets \min\limits_{p_i \in \mathcal{S}} \left( \frac{Y(p_i) - A_i}{Y(p_i)} \right)$\;
+        
+            \If{$\rho \geq \theta$ \textbf{or} $|\mathcal{S}| = |\mathcal{P}|$ \textbf{or} $|\mathcal{S}| = k$}{
+                \textbf{break}\;
+            }
+        
+            Add next path $p_j$ to $\mathcal{S}$\;
+        }
+        
+        \Return{$\{A_i \mid p_i \in \mathcal{S}\}$}
+    \end{algorithm}
+
+\subsection{Path Probing and Payment Execution Procedure}
+
+    Algorithm~\ref{alg:probe_and_pay} outlines the procedure for executing payment transfers and initiating path probing. The system first attempts to transmit the segmented payment amounts through the initially selected paths.
+    
+    Subsequently, the system evaluates the remaining unutilized candidate paths, ranks them based on their total forwarding fees that comprise both fixed and proportional components. The top-$k$ paths with the lowest forwarding fees are selected and issued as probing tasks to collect up-to-date information on channel availability.
+    
+    Finally, if the payment is successfully completed via the initially selected paths, the task will be designated as successful and the total incurred fees will be calculated. Conversely, if the available capacity is insufficient, the task will be designated as failed and the subsequent retry mechanism for failed payments will be proceeded.
+
+
+    \begin{algorithm}[t]
+        \caption{Path Probing and Payment Execution}
+        \label{alg:probe_and_pay}
+        \DontPrintSemicolon % This is often useful to remove semicolons at the end of lines
+        
+        \KwIn{\;
+            Candidate paths $\{(p, Y(p), \alpha(p), \beta(p))\}$ sorted by preference; \\
+            Assigned split amounts $\{A_i\}$ for selected paths
+        }
+        \KwOut{\;
+            Payment status (success/failure), total fee
+        }
+        
+        \SetKwInOut{Define}{Definition} % Define the 'Definition' block
+        \Define{\;
+            $\alpha(p)$: Base fee for path $p$ (sum of base fees of channels in $p$)\;
+            $\beta(p)$: Fee rate for path $p$ (sum of fee rates of channels in $p$)\;
+            $\mathcal{C}$: Set of remaining unselected candidate paths\;
+            $\tau$: Timeout parameter for probing task\;
+            $\text{ProbeTask}(p, \tau)$: A task to probe path $p$ with timeout $\tau$\;
+        }
+        
+        \tcp{Step 1: Execute payment on selected paths}
+        \ForEach{$(p_i, A_i)$ in selected paths}{
+            Attempt to transfer $A_i$ through $p_i$\;
+        }
+        
+        \BlankLine
+        \tcp{Step 2: Probe additional candidate paths by fee}
+        Let $\mathcal{C} \gets$ remaining unselected candidate paths\;
+        Sort $\mathcal{C}$ by total forwarding cost: \\
+        \Indp \tcp*[f]{$\text{TotalFee}(p) = \sum\limits_{(v_i, v_j) \in p} \alpha_{[v_i, v_j]} + \beta_{[v_i, v_j]} \cdot A$}
+        \Indm
+        
+        Let $\mathcal{C}_{top} \gets$ top $k$ paths with lowest total fee in $\mathcal{C}$\;
+        
+        \ForEach{$p \in \mathcal{C}_{top}$}{
+            Create and enqueue probing task $\text{ProbeTask}(p, \tau)$\;
+        }
+        
+        \BlankLine
+        \tcp{Step 3: Finalize payment result}
+        \If{channel capacity is sufficient}{
+            Mark task as successful; compute total fee\;
+        }
+        \Else{
+            Mark task as failed due to insufficient capacity\;
+        }
+        \Return{Payment status and total fee}
+    \end{algorithm}
+        \begin{algorithm}[t]
+        \caption{Fallback Routing Using Probed Paths}
+        \label{alg:fallback}
+        \DontPrintSemicolon 
+        
+        \KwIn{\;
+            Remaining amount $A_{rem}$; \\
+            Probing results $\mathcal{R} = \{(p_i, Y(p_i))\}$; \\
+            Splitting threshold $\gamma$; \\
+            Network graph $G$ and current payment task
+        }
+        \KwOut{\;
+            Updated payment task (success/failure), total fee
+        }
+        
+        \SetKwInOut{Define}{Definition} % Define the 'Definition' block
+        \Define{\;
+            Current payment task: The overall payment operation being processed\;
+            $\mathcal{F}$: List of fallback paths chosen for payment, each with an assigned amount $(p, A_s)$\;
+            $A_c$: Current remaining capacity/amount to fulfill from $A_{rem}$\;
+            $A_s$: Amount to be sent through a specific fallback path $p$\;
+            $\text{success}$: Boolean variable indicating the overall success of fallback routing\;
+            $fee_{total}$: Accumulative total fee incurred for successful transfers\;
+        }
+        
+        Initialize $\mathcal{F} \gets [~]$ \;
+        $A_c \gets A_{rem}$ \tcp*{Remaining amount to fulfill}
+        
+        \ForEach{$(p, Y(p)) \in \mathcal{R}$}{
+            \If{$A_c \leq 0$}{\textbf{break} \tcp*{Target amount fulfilled}}
+        
+            $A_s \gets \min\left(A_c,\; Y(p) \cdot (1 - \gamma)\right)$ \tcp*{Apply success margin}
+        
+            \If{$A_s > 0$}{
+                Append $(p, A_s)$ to $\mathcal{F}$\;
+                $A_c \gets A_c - A_s$\;
+            }
+        }
+        
+        \If{$\mathcal{F}$ is empty}{
+            Mark payment task as \textbf{failed}; no feasible fallback paths\;
+        }
+        \Else{
+            $\text{success} \gets \text{True}$,\quad $fee_{total} \gets 0$\;
+            
+            \ForEach{$(p, A_s) \in \mathcal{F}$}{
+                \If{transfer of $A_s$ through $p$ is successful}{
+                    Update network state;\quad $fee_{total} \mathrel{+}= \text{TotalFee}(p)$\;
+                }
+                \Else{
+                    $\text{success} \gets \text{False}$; \quad \textbf{break} \tcp*{Transfer failed, stop further attempts}
+                }
+            }
+            
+            \If{$\text{success}$ \textbf{and} $A_c \leq 0$}{
+                Mark payment task as \textbf{successful}; return $fee \gets fee_{total}$\;
+            }
+            \ElseIf{$\text{success}$ \textbf{and} $A_c > 0$}{ % Explicitly state A_c > 0 for partial success
+                Mark payment as \textbf{partially successful}; update $A_{rem} \gets A_c$\;
+            }
+            \Else{ % success is False
+                Mark payment task as \textbf{failed}; preserve $A_{rem}$\;
+            }
+        }
+    \end{algorithm}
+
+
+\section{Phase II: Failed Handling}
+    
+    Algorithm~\ref{alg:fallback} introduces the fallback mechanism that is invoked after the failure of the initial routing attempt. The system utilizes previously collected probing results to identify alternative paths with sufficient capacity. For each probed path, a threshold is applied to the probed capacity to reduce the likelihood of failure during reattempts. Based on this threshold-adjusted capacity, the system allocates the remaining unpaid amount across eligible fallback paths.
+    
+    Each selected fallback path subsequently executes the payment. If the entire remaining amount is successfully transferred via these paths, the payment task will be designated as success. If only a portion of the amount is transferred, the entire transaction will be defined as failure.
+	
+%------------------------- Performance Evaluation-------------------------%
+\chapter{Performance Evaluation}\label{Chap:Implementation}
+
+    The evaluation of the system was performed on Python 3.12.3 running on an AMD Ryzen 5 3600 CPU. A network comprising 100 nodes was generated using the Barabasi-Albert model~\cite{barabasi1999emergence}, with the average node degree configured to 5. The channel capacity for each channel was set using the data from bitcoinvisuals.com~\cite{BitcoinVisuals}. Channel transaction fees were generated based on the average fee values and median values provided by 1ml.com~\cite{1ML}. For transaction amounts, this study sampled credit card transaction amounts from the Credit Card Fraud Detection dataset~\cite{CreditCardFraudULB}. Transaction partner combinations were generated with the research data from Flash~\cite{Flash}. This approach aimed to simulate realistic transaction patterns. Regarding the simulator setup, this system employed Poisson distribution simulations to randomly generate transaction arrival times for various transaction frequencies (TPS). The single-hop latency in the experiment was set to 30 ms, referencing Deter-Pay~\cite{Deter-Pay}. Additionally, transactions were enabled to execute concurrently.
+
+    \begin{table}[t]
+      \caption{Simulation Parameters}
+      \label{tab:params}
+      \centering 
+      \begin{tabular}{lc} 
+        \toprule
+        \textbf{Parameter} & \textbf{Value} \\
+        \midrule
+        Number of Nodes & 100 \\
+        Number of Channels & 521 \\
+        Average Channel Capacity & 8,929,583 satoshis \\
+        Median Channel Capacity & 1,589,612 satoshis \\
+        Transaction Frequency (TPS) & 10---100 \\
+        Transaction Amount Range & 0.0---25,691.16 USD \\
+        Simulation Duration & 30---60 s \\
+        Single-hop Latency & 30 ms \\ 
+        \bottomrule
+      \end{tabular}
+    \end{table}
+
+\section{Comparison Algorithms}
+    \begin{enumerate}
+        \item \textbf{Shortest Path}: Shortest path routing is currently employed in the Lightning Network to determine the path between senders and receivers for payments.
+        \item \textbf{Flash}~\cite{Flash}: Flash differentiates between high-value “elephant” payments and low-value “mice” payments. The strategy can improve success rates.
+        \item \textbf{Deter-Pay}~\cite{Deter-Pay}: Deter-Pay combines precomputed candidate paths with a probing-based balance reservation mechanism.
+    \end{enumerate}
+\section{Performance Under Different Workloads}
+  
+    The experiment aims to verify the algorithm's comprehensive performance under varying transaction frequencies. The experimental setup configures the transaction frequency per second from 10 TPS to 100 TPS. The transaction success rate, execution time, and transaction fees incurred per satoshi are recorded with the varying frequencies.
+    
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=\textwidth]{./figures/Success_rate.pdf}
+        \caption{Success rate under different workloads.}
+        \label{fig:Success_rate_TPS}
+    \end{figure}
+    
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=\textwidth]{./figures/Excution_time.pdf}
+        \caption{Execution time under different workloads.}
+        \label{fig:Excution_time_TPS}
+    \end{figure}
+    
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=\textwidth]{./figures/Transection_Fee.pdf}
+        \caption{Transaction fees under different workloads.}
+        \label{fig:Transection_Fee_TPS}
+    \end{figure}
+
+    
+    Transaction Success Rate: Figure~\ref{fig:Success_rate_TPS} illustrates the variation in transaction success rate as the workload (TPS) increases. The proposed method consistently outperforms other protocols, including Deter-Pay, Flash, and Shortest Path, with all tested workloads. The method achieves the highest success rate even at a transaction frequency of 100 TPS and demonstrates its efficiency under high-load conditions. In contrast, Deter-Pay and Flash exhibit fluctuating or declining success rates as the workload increases, and Shortest Path consistently has the lowest performance among all evaluated methods.
+
+    Transaction Latency: Figure~\ref{fig:Excution_time_TPS} displays the variation in transaction delay with different transaction workload frequencies. Compared to Deter-Pay and Flash, the proposed method exhibits stable and comparatively lower execution times. Shortest Path that depends solely on the most basic shortest path algorithm based on network topology, achieves the highest execution efficiency. The proposed method employs a two-phase payment process. A successful first payment phase can reduce overall transaction delay. Deter-Pay's requirement for path probing and channel reservation contributes to its higher transaction delay, especially as higher transaction frequencies may necessitate multiple probing and reservation attempts. Flash exhibits lower latency than Deter-Pay, but the method may incur higher delays due to repeated attempts. Flash lacks effective adaptation because of prior failures.
+
+    Transaction Fees: Figure~\ref{fig:Transection_Fee_TPS} illustrates the variation in transaction fees under different transaction workloads. The proposed method incurs slightly higher fees than Deter-Pay but demonstrates a significant fee advantage over Flash. Shortest Path consistently yields the lowest transaction fees. The result is attributed to its reliance on a single path and a short hop count.
+
+    
+\section{Performance with Scaled Capacities}
+
+
+    
+\label{sec:performance_scaled_capacities}
+    Currently, the average channel capacity of the Lightning Network is approximately 900,000 Satoshis. As off-chain payments become more widespread and more PCNs are practically deployed, channel capacities are expected to increase. This experiment was conducted to verify the effectiveness of the proposed method in the future development of payment channels. The simulation was examined with channel capacities scaled from one-fold to tenfold. These simulations were performed with a fixed testing duration and a constant transaction frequency.
+
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=\textwidth]{./figures/Success_rate_diff_channelsize.pdf}
+        \caption{Success rate under different channel sizes.}
+        \label{fig:Success_rate__diff_channelsize}
+    \end{figure}
+    
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=\textwidth]{./figures/Excution_time_diff_channelsize.pdf}
+        \caption{Execution time under different channel sizes.}
+        \label{fig:Excution_time__diff_channelsize}
+    \end{figure}
+    
+    \begin{figure}[htbp]
+        \centering
+        \includegraphics[width=\textwidth]{./figures/Transection_Fee_diff_channelsize.pdf}
+        \caption{Transaction fees under different channel sizes.}
+        \label{fig:Transection_Fee__diff_channelsize}
+    \end{figure}
+
+    Figure~\ref{fig:Success_rate__diff_channelsize} illustrates that the transaction success rates of all routing methods increase with the enhancement of channel capacity. Under conditions of increased channel capacity, the proposed method demonstrates a significant lead over Deter-Pay and Shortest Path methods.
+
+    Figure~\ref{fig:Excution_time__diff_channelsize} indicates a gradual reduction in the execution time of the proposed method as channel capacity increases. This reduction is attributed to the increased likelihood of successful transactions in the algorithm's first payment phase with the larger channel capacity. Path score calculation and transaction splitting are used to achieve this success. This approach reduces the need for second-stage failed handling and consequently lowers transaction delay. In terms of transaction delay, the algorithm exhibits a more significant advantage compared to Deter-Pay and Flash.
+    
+    Finally, regarding transaction fees, Figure~\ref{fig:Transection_Fee__diff_channelsize} shows that the proposed method offers a lower fee advantage compared to Flash. Although its fees are higher than those of Deter-Pay and Shortest Path, the method demonstrates a significant advantage in success rate. The algorithm effectively balances success rate, execution time, and transaction fees.
+    
+\section{Performance with Failed Handling Mechanisms}
+
+    The experiment was designed to verify the effectiveness of the algorithm's second phase, called Phase II: Failed Handling. The experiments with or without Phase II were conducted. The results were subsequently tested under different Capacity Scales.
+    
+    \begin{figure}[tb] 
+        \centering
+        \includegraphics[width=\textwidth]{./figures/success_rate_w_wo_fail.pdf} 
+        \caption{Success rate with and without failed handling mechanisms.} 
+        \label{fig:success_rate_w_wo_fail}
+    \end{figure}
+    
+    \begin{figure}[tb]
+        \centering
+        \includegraphics[width=\textwidth]{./figures/success_vol_w_wo_fail.pdf} 
+        \caption{Successful volume with and without failed handling mechanisms.}
+        \label{fig:success_vol_w_wo_fail}
+    \end{figure}
+    
+    Figure~\ref{fig:success_rate_w_wo_fail} reveals that under smaller channel capacity scale factors, the Phase II: Failed Handling mechanism significantly enhances the transaction success rate. When channel capacity is larger, the improvement in success rate by failed handling becomes less prominent. Most transactions can be completed in the first phase. This experimental result corroborates the findings in Section~\ref{sec:performance_scaled_capacities} regarding lower transaction delay with larger channel capacity. This outcome is similarly attributed to the increased success rate in the first phase.
+
+    Figure~\ref{fig:success_vol_w_wo_fail} demonstrates a significant increase in the total successful transaction volume ratio regardless of the channel capacity. The Phase II failed handling method effectively satisfies large transaction demands and enhances transaction completion rates. The results are achieved by enabling re-attempts based on probing results and intelligently allocating large transaction amounts to available channels.
+
+%------------------------- Conclusion and Future Works -------------------------%
+\chapter{Conclusion and Future Work} \label{Chap:Conclusion}
+
+\section{Conclusion}
+
+    This thesis presents a two-phase routing algorithm to improve efficiency and reliability in PCNs. The algorithm consists of an initial payment attempt and a re-exploration phase triggered upon failure. Adaptive responses can be enabled to dynamic or inconsistent network conditions.
+    
+    Routing decisions are informed by a combination of factors, including channel capacity, balance status, fee conditions, and usage patterns. The integrated approach improves path selection, reduces payment failure rates, and lowers overall transaction costs.
+    
+    Routing performance was examined based on the simulated transaction workloads and network conditions. The proposed algorithm typically outperforms existing methods in terms of success rate, latency, and cost. The evaluation results confirm the effectiveness of the algorithm for scalable PCN routing.
+
+\section{Future Work}
+	
+    In this research, it is assumed that channel-related information can be obtained through trusted nodes. Nevertheless, considering the high demands for privacy protection in decentralized platforms, it is imperative that no sensitive data is compromised through any means. Therefore, future work ought to explore the development of more efficient routing mechanisms and also guarantee the privacy of every node.
+	
+}\end{thesis}
+
+
+%------------------------- References -------------------------%
+\singlespace {\large
+\bibliography{Reference}
+}
+\bibliographystyle{IEEEtran}
+
+\doublespace
+
+%--------------------------------------------------------%
+
+\end{document}
+
+
