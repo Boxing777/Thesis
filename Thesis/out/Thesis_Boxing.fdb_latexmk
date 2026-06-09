@@ -1,0 +1,14 @@
+# Fdb version 4
+["xdvipdfmx"] 0 "out/Thesis_Boxing.xdv" "out/Thesis_Boxing.pdf" "out/Thesis_Boxing" 0 -1
+  "out/Thesis_Boxing.xdv" 0 -1 0 "xelatex"
+  (generated)
+  "out/Thesis_Boxing.pdf"
+  (rewritten before read)
+["xelatex"] 0 "c:/Users/Boxing/Desktop/myThesis/Thesis/Thesis_Boxing.tex" "out/Thesis_Boxing.xdv" "Thesis_Boxing" 0 -1
+  "c:/Users/Boxing/Desktop/myThesis/Thesis/Thesis_Boxing.tex" 0 -1 0 ""
+  "out/Thesis_Boxing.aux" 0 -1 0 "xelatex"
+  (generated)
+  "out/Thesis_Boxing.aux"
+  "out/Thesis_Boxing.log"
+  "out/Thesis_Boxing.xdv"
+  (rewritten before read)
