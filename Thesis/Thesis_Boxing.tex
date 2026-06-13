@@ -159,7 +159,7 @@ National Cheng Kung University \\
 
     As shown in Fig.~\ref{fig:system_model}, this thesis considers a UAV-assisted wireless sensor network in which a single UAV is employed to collect data from multiple ground nodes (GNs). The UAV departs from the data center, visits the communication regions of the GNs to collect their data, and returns to the data center after completing the data collection task. Let \(\mathcal{N}=\{g_1,g_2,\ldots,g_n\}\) denote the set of GNs, where \(n\) is the number of GNs. A three-dimensional Cartesian coordinate system is adopted, where the GNs are located on the ground plane and the UAV flies at a fixed altitude \(H\). The elevation angle between the UAV and a GN is denoted by \(\theta\), and the maximum flying speed of the UAV is denoted by \(v_{\max}\).
     
-
+    During the data collection process, the UAV may operate in flying mode (FM) or hovering mode (HM). In FM, the UAV collects data while moving within the communication region of a GN. In HM, if the data collected along the flying trajectory is insufficient, the UAV hovers directly above the corresponding GN for additional data collection.
     
     \begin{figure*}[!t]
 		\centering
@@ -167,6 +167,16 @@ National Cheng Kung University \\
 		\caption{Illustration of the UAV data collection process.} 
 		\label{fig:system_model}
 	\end{figure*}
+
+     \noindent\textit{1) Transmission Model:} A delay-tolerant UAV-assisted WSN is considered, in which each ground node \(g_i\) stores sensing data and uploads the data to the UAV when the UAV enters its communication region. Each ground node is equipped with a single omnidirectional antenna and transmits with a fixed power \(P_t\) over a channel bandwidth \(B\). The uplink transmission rate from GN \(g_i\) to the UAV at time \(t\) is expressed as
+\begin{equation}
+    R_i(t)=B\log_2\left(1+\gamma_i(t)\right)
+\end{equation}
+in which \(\gamma_i(t)\) denotes the received signal-to-noise ratio (SNR) from GN \(g_i\) to the UAV at time \(t\). The SNR is given by
+\begin{equation}
+    \gamma_i(t)=\frac{P_t}{\sigma^2 L_{dB_i}(t)}
+\end{equation}
+where \(\sigma^2\) denotes the noise power at the UAV receiver, and \(L_{dB_i}(t)\) represents the air-to-ground path loss between GN \(g_i\) and the UAV at time \(t\). The UAV can successfully collect data only when the received SNR satisfies \(\gamma_i(t)\geq\bar{\gamma}\). To avoid transmission interference among ground nodes, only the ground node being served is allowed to transmit data to the UAV during its corresponding service interval.
 
 \section{Problem Formulation}
 
