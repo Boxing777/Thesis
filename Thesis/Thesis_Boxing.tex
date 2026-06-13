@@ -111,13 +111,13 @@ National Cheng Kung University \\
 %------------------------- Introduction -------------------------%
 \chapter{Introduction}
 
-    With the rapid development of the Internet of Things (IoT) and wireless communication technologies, wireless sensor networks (WSNs) have been widely applied in environmental monitoring, smart agriculture, post-disaster detection, military reconnaissance, and other fields~\cite{Qin2019},~\cite{Zhang2023},~\cite{Xiang2023UAVMEC}. In these applications, ground nodes (GNs) are mainly responsible for collecting environmental parameters, such as temperature, humidity, air quality, and water quality. In such IoT applications, each GN usually generates lightweight data packets~\cite{Meng2025UAVPathPlanningSurvey},~\cite{Wei2022UAVIoTSurvey}. However, due to limited battery capacity and hardware cost, GNs are often unable to support long-distance wireless transmission. Therefore, transmitting sensing data back to a data center remains a major challenge.
+    With the rapid development of the Internet of Things (IoT) and wireless communication technologies, wireless sensor networks (WSNs) have been widely applied in environmental monitoring, smart agriculture, post-disaster detection, military reconnaissance, and other fields~\cite{Qin2019, Zhang2023, Xiang2023UAVMEC}. In these applications, ground nodes (GNs) are mainly responsible for collecting environmental parameters, such as temperature, humidity, air quality, and water quality. In such IoT applications, each GN usually generates lightweight data packets~\cite{Meng2025UAVPathPlanningSurvey, Wei2022UAVIoTSurvey}. However, due to limited battery capacity and hardware cost, GNs are often unable to support long-distance wireless transmission. Therefore, transmitting sensing data back to a data center remains a major challenge.
     
-    Unmanned aerial vehicles (UAVs) have become a feasible solution to this problem because of their high mobility, flexible deployment, and ability to establish favorable air-to-ground (A2G) line-of-sight (LoS) communication links~\cite{Zeng2019UAVTutorial},~\cite{AlHourani2014LAPAltitude}. A UAV can serve as an aerial mobile data collector by actively approaching GNs and collecting data within their communication regions. This approach not only reduces the transmission power consumption of GNs and extends the lifetime of sensing devices, but also alleviates communication interruptions caused by terrain blockage~\cite{Zeng2019EnergyMinimization},~\cite{Wu2018MultiUAVTrajectoryCommunication}.
+    Unmanned aerial vehicles (UAVs) have become a feasible solution to this problem because of their high mobility, flexible deployment, and ability to establish favorable air-to-ground (A2G) line-of-sight (LoS) communication links~\cite{Zeng2019UAVTutorial, AlHourani2014LAPAltitude}. A UAV can serve as an aerial mobile data collector by actively approaching GNs and collecting data within their communication regions. This approach not only reduces the transmission power consumption of GNs and extends the lifetime of sensing devices, but also alleviates communication interruptions caused by terrain blockage~\cite{Zeng2019EnergyMinimization, Wu2018MultiUAVTrajectoryCommunication}.
 
-    In UAV-assisted data collection tasks, mission completion time (MCT) is a critical performance metric~\cite{Zhang2023CompletionTimeDRL}. MCT refers to the total time required for the UAV to depart from the data center, complete data collection from all target GNs, and return to the data center. For time-sensitive IoT applications, such as real-time forest fire monitoring and border intrusion detection, reducing MCT allows the decision center to obtain on-site information more quickly and respond in a timely manner~\cite{Shen2022MultiUAVTimeWindows},~\cite{Li2022MCT}. A shorter MCT also enables the UAV to serve more GNs within its limited battery~\cite{Li2023DataCollectionMaximization}. Early studies often approximated MCT by the UAV flight time and simplified the problem into a flight distance reduction problem~\cite{Alemayehu2017TSPHeuristic}. However, when communication models and data requirements are considered, a shortest geometric path does not necessarily lead to a shorter MCT~\cite{Gong2018FlightTimeMinimization},~\cite{Fu2024CollectionPoint}. According to the Shannon formula, the wireless transmission rate increases with the signal-to-noise ratio (SNR), while the SNR decreases as the communication distance between the UAV and a GN increases~\cite{Wang2022TrajectoryPower}. If the UAV passes near the boundary of a GN communication region to reduce flight distance, the flight time can be shortened, but the lower transmission rate can increase the data collection time or hovering time. In contrast, if the UAV moves excessively close to the GN center to improve the transmission rate, additional flight distance and flight time can be introduced. Therefore, reducing MCT requires a proper tradeoff between flight distance and data collection time.
+    In UAV-assisted data collection tasks, mission completion time (MCT) is a critical performance metric~\cite{Zhang2023CompletionTimeDRL}. MCT refers to the total time required for the UAV to depart from the data center, complete data collection from all target GNs, and return to the data center. For time-sensitive IoT applications, such as real-time forest fire monitoring and border intrusion detection, reducing MCT allows the decision center to obtain on-site information more quickly and respond in a timely manner~\cite{Shen2022MultiUAVTimeWindows, Li2022MCT}. A shorter MCT also enables the UAV to serve more GNs within its limited battery~\cite{Li2023DataCollectionMaximization}. Early studies often approximated MCT by the UAV flight time and simplified the problem into a flight distance reduction problem~\cite{Alemayehu2017TSPHeuristic}. However, when communication models and data requirements are considered, a shortest geometric path does not necessarily lead to a shorter MCT~\cite{Gong2018FlightTimeMinimization, Fu2024CollectionPoint}. According to the Shannon formula, the wireless transmission rate increases with the signal-to-noise ratio (SNR), while the SNR decreases as the communication distance between the UAV and a GN increases~\cite{Wang2022TrajectoryPower}. If the UAV passes near the boundary of a GN communication region to reduce flight distance, the flight time can be shortened, but the lower transmission rate can increase the data collection time or hovering time. In contrast, if the UAV moves excessively close to the GN center to improve the transmission rate, additional flight distance and flight time can be introduced. Therefore, reducing MCT requires a proper tradeoff between flight distance and data collection time.
 
-    Since the UAV only needs to enter the communication region of each GN to collect data and does not have to fly directly above every GN, this task can be regarded as a path planning problem with neighborhoods, namely the Traveling Salesman Problem with Neighborhoods (TSPN)~\cite{Luo2021TrajectoryWSN}. However, unlike conventional TSPN, which mainly focuses on geometric path length, UAV-assisted data collection is also affected by communication distance, transmission rate, and data collection time. Therefore, the UAV needs to determine not only the visiting path among communication regions, but also the entry position, exit position, movement depth, and data collection trajectory within each communication region. Existing studies have investigated UAV-assisted WSN data collection from different perspectives. Some studies reduce the geometric path length through GN communication regions~\cite{Luo2021TrajectoryWSN}, while other studies consider flying mode, hovering mode, or V-shaped collection trajectories~\cite{Wang2020CollaborativeUAVs},~\cite{He2024VShapedTrajectory}. These studies show that MCT is affected by both flight time and data collection time. Two issues still require further consideration. First, if global geometric direction information is not considered, local trajectory adjustment can deviate from the overall shorter flight path. Second, when adjacent GN communication regions overlap, restricting service switching to the boundary of a single communication circle can cause redundant boundary transitions and unnecessary back-and-forth movement.
+    Since the UAV only needs to enter the communication region of each GN to collect data and does not have to fly directly above every GN, this task can be regarded as a path planning problem with neighborhoods, namely the Traveling Salesman Problem with Neighborhoods (TSPN)~\cite{Luo2021TrajectoryWSN}. However, unlike conventional TSPN, which mainly focuses on geometric path length, UAV-assisted data collection is also affected by communication distance, transmission rate, and data collection time. Therefore, the UAV needs to determine not only the visiting path among communication regions, but also the entry position, exit position, movement depth, and data collection trajectory within each communication region. Existing studies have investigated UAV-assisted WSN data collection from different perspectives. Some studies reduce the geometric path length through GN communication regions~\cite{Luo2021TrajectoryWSN}, while other studies consider flying mode, hovering mode, or V-shaped collection trajectories~\cite{Wang2020CollaborativeUAVs, He2024VShapedTrajectory}. These studies show that MCT is affected by both flight time and data collection time. Two issues still require further consideration. First, if global geometric direction information is not considered, local trajectory adjustment can deviate from the overall shorter flight path. Second, when adjacent GN communication regions overlap, restricting service switching to the boundary of a single communication circle can cause redundant boundary transitions and unnecessary back-and-forth movement.
 
     Based on the above observations, this thesis focuses on a single-UAV-assisted WSN data collection task and proposes a trajectory planning method that considers both flight path and data collection efficiency. The proposed method combines global geometric information and a local data collection strategy to reduce the overall MCT of the UAV data collection task. The related mechanisms and implementation details are presented in the following chapters.
 
@@ -135,170 +135,53 @@ National Cheng Kung University \\
 
 %------------------------- Related Works -------------------------%
 \chapter{Related Work}\label{Chap:Related}
-	
-	Routing within PCNs presents a significant research challenge, primarily due to limited channel capacity and highly dynamic network conditions. Most current routing algorithms necessitate that the initiating node possesses global network topology information to compute end-to-end payment paths from sender to receiver. These methods typically rely on path probing to assess residual channel capacities before transaction execution.
-
-    For instance, Deter-Pay \cite{Deter-Pay} employs a greedy strategy and probes to select feasible paths with the lowest fees. Similarly, CoinExpress \cite{CoinExpress} and Flash \cite{Flash} also leverage probing-based approaches. Flash segments large payments into multiple sub-payments and probes channel states to acquire necessary information prior to execution. EPA-Route \cite{EPA-Route} further proposes a routing and probing mechanism that simultaneously balances high success rates with low transaction fees. EPA-Route uses local routing tables at each node to identify potential paths. It then filters and prunes these paths based on hop feasibility. After path discovery, EPA-Route aggregates multiple valid paths. It segments payments into sub-payments and distributes them across these paths to enhance overall efficiency. However, this ``probe-then-pay" approach inherently introduces substantial transaction delays, as routing decisions are contingent upon the completion of the probing process.
     
-	Beyond probe-based methods, several studies~\cite{Fence,MPCN-RP,Fee_Adjustment} concentrate on enhancing routing efficiency and channel longevity through dynamic fee adjustments. The core idea is to increase fees for unbalanced or heavily utilized channels while lowering fees for balanced channels. This guides traffic away from potential bottleneck paths. Fence~\cite{Fence} exemplifies this approach by setting strategic fee rates. This prevents rapid fund depletion on one side of a channel due to asymmetric payment flows. PCN sustainability and long-term throughput are enhanced. MPCN-RP~\cite{MPCN-RP} further incorporates diverse transaction costs. The system integrates channel imbalance and hop fees into its routing model to identify paths optimized for both total cost and path length. Despite the mechanisms for guiding traffic and balancing funds, the implementation encounters challenges. Frequent fee fluctuations introduce uncertainty in transaction costs. This is particularly detrimental to high-frequency or time-sensitive applications. Additionally, malicious nodes could potentially manipulate fees to disrupt normal routing, and then security risks are introduced.
+    In UAV-assisted WSN data collection tasks, existing studies can be broadly divided into two categories. The first category focuses on geometric path planning, where the communication range of each GN is regarded as a serviceable region, and the UAV flight path passing through all communication regions is shortened to reduce flight time. The second category considers the data collection process within the communication range, where the UAV adjusts its collection trajectory according to the required data amount and communication conditions. The former provides a shorter geometric reference path, whereas the latter reduces the data collection time.
 
-	Current literature primarily concentrates on enhancing initial payment success rates. Methods, such as AutoTune~\cite{AutoTune}, PACO~\cite{PACO}, and VEIN~\cite{VEIN}, aim to enhance path selection efficiency and resource utilization. Despite advancements in routing design, the systematic exploration of retransmission strategies following payment failures remains limited. This limitation is particularly critical given the constraints of limited channel capacity.
+    The study in~\cite{Luo2021TrajectoryWSN} modeled UAV path planning as a TSPN problem and showed that this problem is NP-hard. In~\cite{Li2020JointOptimization} considered a single-UAV-assisted data collection problem by jointly considering trajectory, altitude, velocity, and link scheduling. The study indicated that data transmission can be supported when the UAV is located within the communication range of a ground user, without requiring the UAV to fly directly above the ground user. The original mission time problem was transformed into a trajectory length problem. This method mainly focuses on shortening the geometric path length.
 
-	Existing research has made notable strides in enhancing initial transaction success rates and fee adjustment strategies. The reliance on real-time channel state probing introduces substantial delays. Furthermore, the recovery and retransmission strategies for payment failures remain a critical issue. This study aims to develop low-latency routing mechanisms and robust retransmission protocols for enhancing the scalability and reliability of PCNs.
+    Reference~\cite{Gong2018FlightTimeMinimization} indicated that simply shortening the flight distance can move the UAV farther away from sensor nodes, thereby reducing the transmission rate and increasing the time required to complete data reception. The results show that the flight distance, flight speed, and communication rate in UAV data collection tasks are not independent and should be considered jointly. The effect of the collection point location on mission time was further discussed in~\cite{Fu2024CollectionPoint}, where it was shown that the UAV data collection point should not be determined solely by the shortest flight distance or the best communication quality. If the UAV flies directly above a node, better communication quality can be achieved, but the flight distance can increase. In contrast, if the UAV collects data near the boundary of the communication range, the flight path can be shortened, but the longer distance between the UAV and the node reduces the transmission rate and increases the data collection time. This observation suggests that the collection point location should be determined by jointly considering the flight cost and the communication condition.
+
+    In~\cite{Wang2020CollaborativeUAVs}, FM and HM were introduced as two data collection modes for UAVs. In FM, the UAV can continuously receive data while flying, which is suitable for nodes with smaller data requirements or better communication conditions. In HM, the UAV hovers at a specific location for data collection, which is suitable for nodes with larger data requirements or poorer communication conditions. The distinction between FM and HM allows the UAV to adjust its collection mode according to the node status and data requirement, instead of serving all nodes with a fixed collection mode.
+
+    For user scheduling and UAV trajectory design,~\cite{Yuan2023CompletionTime} investigated the completion time problem for a single UAV collecting data from multiple sensor nodes. It was proved that, under specific conditions, a suitable UAV trajectory has an SHF structure, in which the UAV hovers at selected locations for data collection and flies at the maximum speed between these hovering locations. The authors also emphasized the importance of segment-based scheduling, meaning that the UAV mainly serves a specific sensor during a particular flying or hovering segment instead of frequently switching among different sensors.
+
+    In~\cite{Li2022MCT} further investigated the impact of the data collection trajectory on the MCT and proposed a V-shaped collection trajectory. If the UAV flies into the interior of the communication range, part of the flight distance increases, but the SNR and transmission rate can be improved, thereby reducing the data collection time and the overall mission time. The work also pointed out that the service trajectories of adjacent nodes are coupled. The previous node affects the starting position when the UAV serves the next node. Therefore, if the service trajectory of each node is determined independently, additional flight distance can be introduced for subsequent nodes. In other words, locally reducing the data collection time of one node does not necessarily reduce the overall MCT. The UAV still needs to consider the continuous flight direction and service connection between adjacent nodes.
+
+    The above studies show that trajectory planning for UAV-assisted data collection mainly involves two interrelated design aspects. First, geometric path planning methods reduce the flight distance for the UAV to pass through multiple communication regions~\cite{Luo2021TrajectoryWSN, Li2020JointOptimization}. Second, data collection trajectory design indicates that the UAV can moderately move into the communication range according to the required data amount and communication conditions, thereby improving the transmission rate and reducing the data collection time~\cite{Li2022MCT, Fu2024CollectionPoint}. In addition, existing studies have explained the close relationship between UAV flight behavior and communication conditions from the perspectives of flight speed and transmit power control, as well as FM/HM mode switching~\cite{Gong2018FlightTimeMinimization, Wang2020CollaborativeUAVs, Yuan2023CompletionTime}.
+
+    Based on the above research context, this thesis focuses on a single-UAV-assisted WSN data collection task and investigates how to jointly consider the flight trajectory, the data collection trajectory within the communication range, and the service connection between adjacent nodes. Existing studies have shown the importance of geometric path shortening and data collection within the communication range. If trajectory planning mainly relies on geometric path length, the effect of the distance variation between the UAV and the GN on the data collection time cannot be fully reflected. In contrast, if the local data collection trajectory lacks a global geometric direction reference, the trajectory can gradually deviate from the shorter overall flight direction. In addition, when the communication ranges of adjacent or consecutive nodes overlap, the overlapping region provides additional flexibility for service switching. Effectively using this geometric property can help reduce unnecessary boundary switching and back-and-forth flight. Therefore, this study focuses on maintaining a shorter overall flight distance while considering the data collection efficiency within the communication range, and further utilizes the overlapping regions between adjacent communication ranges to improve service switching flexibility, thereby reducing the overall MCT.
 
 %------------------------- Problem Formulation -------------------------%
 \chapter{System Model}\label{Chap:Problem Formulation}
 
-	This chapter introduces the system model of the PCN, including its structure, routing mechanisms, and related assumptions.
+\section{System Model}
 
-\section{System Overview}
-	
-    The proposed system aims to significantly enhance the overall transaction success rate, reduce transaction fees, and minimize transaction latency. Transaction latency is specifically defined as the duration from the initiation of a transaction request until either the complete delivery of funds to the recipient or the system's confirmation of failure.
+    As shown in Fig.~\ref{fig:system_model}, this thesis considers a UAV-assisted wireless sensor network in which a single UAV is employed to collect data from multiple ground nodes (GNs). The UAV departs from the data center, visits the communication regions of the GNs to collect their data, and returns to the data center after completing the data collection task. Let \(\mathcal{N}=\{g_1,g_2,\ldots,g_n\}\) denote the set of GNs, where \(n\) is the number of GNs. A three-dimensional Cartesian coordinate system is adopted, where the GNs are located on the ground plane and the UAV flies at a fixed altitude \(H\). The elevation angle between the UAV and a GN is denoted by \(\theta\), and the maximum flying speed of the UAV is denoted by \(v_{\max}\).
     
-    Upon receiving a transaction request, the system employs a routing algorithm to identify optimal payment pathways. A transaction is considered successful only when the entire requested amount reaches the recipient. This algorithm is designed to increase the success rate while carefully balancing transaction cost and latency, ensuring transactions complete with reduced fees without compromising reliability or incurring substantial delays.
+
     
-    Figure~\ref{fig:SystemOverview} depicts an overview of the system. The routing algorithm comprises three primary components: Routing Table Establishment, Route Analysis with Parallel Payment Probing, and Failure Handling. Each component will be elaborated upon in subsequent sections.
-
-        \begin{figure}[t]
-          \centering
-          \includegraphics[width=0.95\textwidth]{./figures/SystemOverview.eps}
-          \caption{System overview.}
-          \label{fig:SystemOverview}
-        \end{figure}
-
-\section{System Assumption}
-
-	The PCN serves as a Layer-2 solution designed to enhance the scalability of blockchain transactions and reduce latency. The core concept involves establishing payment channels that enable two parties to perform multiple off-chain transactions without submitting each transaction to the underlying blockchain. Individual channels are interconnected to form a network. This network enables efficient value transfer across multiple nodes. To incentivize nodes to participate in routing services, most protocols implement a routing fee mechanism, which allows intermediary nodes to earn a reward for forwarding transactions. This section will introduce the concepts of payment channels, the structure of the PCN, and the design of routing fees in subsequent subsections.
-
-
-	\noindent\textbf{Payment Channels:} A payment channel is jointly established by two participants through the deployment of a smart contract. Both parties deposit funds into a \mbox{2-of-2} multi-signature wallet that serves as the basis of the channel. The opening and closing of the channel are recorded on the underlying blockchain, and all transactions during the channel???s lifetime are conducted off-chain. This multi-signature wallet facilitates a bidirectional payment channel. Each participant holds a certain amount of available balance. In each transaction, one party???s balance decreases while the other party???s balance increases by the corresponding amount.
-
-	As depicted in Figure~\ref{fig:Channels_a}, Alice and Bob deposit funds into the payment channel. Subsequently, Alice sends 1 satoshi to Bob, as illustrated in Figure~\ref{fig:Channels_b}. Following this transaction, as shown in Figure~\ref{fig:Channels_c}, Alice???s balance decreases by 1 satoshi, and Bob???s balance increases by 1 satoshi, so completing an off-chain transfer of value is completed.
-
-
-	\noindent\textbf{Payment Channel Network:} A payment channel network comprises multiple payment channels and participating users. In instances where no direct payment channel exists between a sender and a receiver, funds can be routed through intermediate nodes. As depicted in Figure~\ref{fig:Payment_Channel_Network}, nodes within the network can forward funds to other nodes via connected intermediate nodes and their corresponding payment channels.
-
-	This study assumes that the network topology of the PCN is periodically disseminated and updated among nodes using a gossip protocol. Each node can access information, such as the overall network topology, the fee models of other nodes, and the total capacity of payment channels. However, the real-time channel balances are considered private and cannot be directly obtained.
-
-	\noindent\textbf{Transaction Fee:} In a PCN, the transaction fee typically comprises two components: a \textit{base fee} and a \textit{proportional fee}. The total transaction fee model can be expressed as follows.
-
-	Let each path $q$ be defined as a sequence of adjacent payment channels $(i, j)$. For each channel $(i,j)$, the following are defined:
-
-	\begin{itemize}
-		\item $\beta_{i,j}$: the \textit{base fee} charged by channel $(i,j)$;
-		\item $\gamma_{i,j}$: the \textit{proportional fee rate} set by channel $(i,j)$.
-	\end{itemize}
-
-	Then, the total fee incurred by sending an amount $z_{\rho,q}$ along path $q$ is given by:
-
-	\begin{equation}
-	C(z_{\rho,q}, q) = \sum_{(i,j) \in q} \left( \beta_{i,j} + \gamma_{i,j} \cdot z_{\rho,q} \right)
-	\tag{1}
-	\end{equation}
-
-	This model encapsulates the fact that the total transaction fee for a sub-transaction is contingent upon the number of hops along the selected path, the fee configuration of each channel, and the amount being transferred. The model is widely adopted in Layer-2 payment protocols, including the Lightning Network.
-	
-	\vspace{4mm}
-	\begin{figure*}[h!]
+    \begin{figure*}[!t]
 		\centering
-		\begin{subfigure}{0.45\textwidth}
-			\centering
-			\includegraphics[width=\linewidth]{./figures/Payment_Channels_a.eps} 
-			\caption{}
-			\label{fig:Channels_a}
-		\end{subfigure}%
-		\hfill%
-		\begin{subfigure}{0.45\textwidth}
-			\centering
-			\includegraphics[width=\linewidth]{./figures/Payment_Channels_b.eps} 
-			\caption{}
-			\label{fig:Channels_b}
-		\end{subfigure}%
-		\hfill%
-		\begin{subfigure}{0.45\textwidth}
-			\centering
-			\includegraphics[width=\linewidth]{./figures/Payment_Channels_c.eps}
-			\caption{}
-			\label{fig:Channels_c}
-		\end{subfigure}
-		\caption{Example of the payment channel.}
-		\label{fig:payment_channel}
+		\includegraphics[width=1\textwidth]{./figures/system_model.png}
+		\caption{Illustration of the UAV data collection process.} 
+		\label{fig:system_model}
 	\end{figure*}
-	
-	\begin{figure}[t]
-	\centering
-	\includegraphics[width=\textwidth]{./figures/Payment_Channel_Network.eps}
-	\caption{Payment channel network.} 
-	\label{fig:Payment_Channel_Network}
-	\vspace{2mm}
-	\end{figure}
-	
+
 \section{Problem Formulation}
 
-	This study investigates a PCN environment where multiple transactions execute concurrently within a fixed time interval T. Each node within the network may process multiple incoming fund transfer requests in parallel. A key operational characteristic is that intermediate channels involved in a transaction remain locked until the fund transfer is finalized. Given the dynamic and unpredictable nature of individual channel balances, it is challenging to ascertain whether a path possesses sufficient liquidity using only predefined or static information. To address this challenge, a routing algorithm is proposed to optimize path selection and transaction amount allocation within such a dynamic environment.
-
-	Let $\mathcal{R}$ denote the set of all transaction requests generated during the interval $T$. Each transaction request $\rho \in \mathcal{R}$ is represented as a tuple $\rho = (u_{\rho}, v_{\rho}, a_{\rho}, t_{\rho})$, where $u_{\rho}$ and $v_{\rho}$ denote the source and destination nodes, respectively. $a_{\rho}$ is the transaction amount and $t_{\rho}$ is the initiation time.
-
-	For each transaction $\rho$, a set of candidate paths $\mathcal{Q}^{\rho}$ connecting $u_{\rho}$ to $v_{\rho}$ is assumed. Each path $q \in \mathcal{Q}^{\rho}$ is defined as $q = (u_{\rho}, v^{q}_{1}, v^{q}_{2}, \dots, v^{q}_{l}, v_{\rho})$, where $v^{q}_{1}, v^{q}_{2}, \dots, v^{q}_{l}$ are intermediate nodes along the path.
-
-	The proposed routing algorithm supports multipath payments. A single transaction is segmented into multiple sub-transactions routed through distinct paths. Let $z_{\rho,q}$ denote the sub-amount of transaction $\rho$ assigned to path $q$. A binary variable $\delta_{\rho} \in \{0,1\}$ is defined to indicate whether transaction $\rho$ is successfully completed ($\delta_{\rho} = 1$) or not ($\delta_{\rho} = 0$).
-
-	The optimization problem is formulated with the following objectives:
-
-	\begin{enumerate}
-		\item \textbf{Maximize the total amount of successfully completed transactions.} As delineated in Equation~\ref{obj_max_amount}, this objective seeks to prioritize the successful completion of transactions for increasing the total transferred amounts.
-		\begin{equation}
-		\label{obj_max_amount}
-		\max \sum_{\rho \in \mathcal{R}} \sum_{q \in \mathcal{Q}^{\rho}} z_{\rho, q} \cdot \delta_{\rho}
-		\end{equation}
-
-		\item \textbf{Minimize the total transaction fees.} As presented in Equation~\ref{eq:obj_min_fee}, this objective aims to reduce the total cost incurred from routing payments. $C(z_{\rho,q}, q)$ denotes the fee for sending amount $z_{\rho,q}$ along path $q$.
-		\begin{equation}
-		\label{eq:obj_min_fee}
-		\min \sum_{\rho \in \mathcal{R}} \sum_{q \in \mathcal{Q}^{\rho}} C(z_{\rho, q}, q)
-		\end{equation}
-	\end{enumerate}
-
-	\subsection*{Constraints}
-
-	The optimization is subject to the following constraints:
-
-	\begin{enumerate}
-		\item \textbf{Transaction fulfillment constraint.} As expressed in Equation~\ref{eq:con_full_payment}, the total allocated sub-amounts for each transaction must meet or exceed its required amount.
-		\begin{equation}
-		\label{eq:con_full_payment}
-		\sum_{q \in \mathcal{Q}^{\rho}} z_{\rho,q} \geq a_{\rho} \cdot \delta_{\rho}, \quad \forall \rho \in \mathcal{R}
-		\end{equation}
-
-		\item \textbf{Channel capacity constraint.} For each channel $(i,j)$ with available capacity $cap_{i,j}$, the aggregate flow through the channel from all transactions must not exceed this capacity. The variable $z_{\rho,q}$ is included in the sum if $(i,j) \in q$.
-		\begin{equation}
-		\label{eq:con_capacity}
-		\sum_{\rho \in \mathcal{R}} \sum_{q \in \mathcal{Q}^{\rho} : (i,j) \in q} z_{\rho,q} \leq cap_{i,j}, \quad \forall (i,j) \in E
-		\end{equation}
-
-		\item \textbf{Non-negativity constraint.} All allocated sub-transaction amounts must be non-negative.
-		\begin{equation}
-		\label{eq:con_non_negative}	
-		z_{\rho,q} \geq 0, \quad \forall \rho \in \mathcal{R},~ q \in \mathcal{Q}^{\rho}
-		\end{equation}
-
-		\item \textbf{Binary success indicator.} The transaction success variable $\delta_{\rho}$ is constrained to be binary.
-		\begin{equation}
-		\label{eq:con_binary_delta}
-		\delta_{\rho} \in \{0,1\}, \quad \forall \rho \in \mathcal{R}
-		\end{equation}
-	\end{enumerate}
+	
 	
 %------------------------- Proposed Solution -------------------------%
 \chapter{Proposed Solution}\label{Chap:Proposed Solution}
 	
     This chapter provides a detailed explanation of the routing algorithm designed for PCN. The algorithm consists of three components: Routing Table Establishment, Route Analysis and Parallel Payment and Probing, and Failed Handling. The complete system architecture is illustrated in Figure~\ref{fig:system_artch}.
 
-	\begin{figure*}[]
+	\begin{figure*}[!t]
 		\centering
 		\includegraphics[width=1\textwidth]{./figures/sysarc.pdf
 }
-		\caption{\large Flow chart of the system.} 
+		\caption{Flow chart of the system.} 
 		\label{fig:system_artch}
 	\end{figure*}
     
@@ -307,7 +190,7 @@ National Cheng Kung University \\
     Table~\ref{tab:notation} lists the primary symbols used throughout the proposed routing algorithm. These notations are essential for the detailed operations in each phase.
     
  
-    \begin{table}[htbp] 
+    \begin{table}[t] 
         \caption{List of Notations} 
         \label{tab:notation} 
         \centering 
