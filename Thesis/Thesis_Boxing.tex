@@ -527,138 +527,103 @@ National Cheng Kung University \\
 %------------------------- Performance Evaluation-------------------------%
 \chapter{Performance Evaluation}\label{Chap:Implementation}
 
-    The evaluation of the system was performed on Python 3.12.3 running on an AMD Ryzen 5 3600 CPU. A network comprising 100 nodes was generated using the Barabasi-Albert model~\cite{barabasi1999emergence}, with the average node degree configured to 5. The channel capacity for each channel was set using the data from bitcoinvisuals.com~\cite{BitcoinVisuals}. Channel transaction fees were generated based on the average fee values and median values provided by 1ml.com~\cite{1ML}. For transaction amounts, this study sampled credit card transaction amounts from the Credit Card Fraud Detection dataset~\cite{CreditCardFraudULB}. Transaction partner combinations were generated with the research data from Flash~\cite{Flash}. This approach aimed to simulate realistic transaction patterns. Regarding the simulator setup, this system employed Poisson distribution simulations to randomly generate transaction arrival times for various transaction frequencies (TPS). The single-hop latency in the experiment was set to 30 ms, referencing Deter-Pay~\cite{Deter-Pay}. Additionally, transactions were enabled to execute concurrently.
+    This chapter evaluates the performance of the proposed Reference-Path Attractor and Boundary-Overlap (RPA-BO) scheme for UAV-assisted data collection in wireless sensor networks. The main objective of the evaluation is to examine whether the proposed scheme can reduce the mission completion time (MCT) under different data sizes. In addition to MCT, the total flight distance is also evaluated, since the flight distance directly affects the UAV flight time and also reflects how different trajectory planning schemes guide the UAV through the GN communication regions.
+    
+    The performance of the proposed RPA-BO scheme is compared with two baseline schemes. The first baseline is the Convex shortest path, which determines the shortest geometric trajectory through the GN communication regions based on the obtained GN visiting sequence. This baseline represents a geometric trajectory planning approach that mainly reduces the flight path length. To ensure a fair comparison, the same GN visiting sequence is applied to all compared schemes. The second baseline is the V-shaped scheme, which adopts a V-shaped data collection trajectory for each GN and considers the data collection process inside the communication region. The proposed RPA-BO scheme further uses reference-path attractors to provide global geometric guidance and applies the Boundary-Overlap Strategy to enable flexible service switching in overlapping GN communication regions.
+    
+\section{Simulation Setup}
 
-    \begin{table}[t]
-      \caption{Simulation Parameters}
-      \label{tab:params}
-      \centering 
-      \begin{tabular}{lc} 
-        \toprule
-        \textbf{Parameter} & \textbf{Value} \\
-        \midrule
-        Number of Nodes & 100 \\
-        Number of Channels & 521 \\
-        Average Channel Capacity & 8,929,583 satoshis \\
-        Median Channel Capacity & 1,589,612 satoshis \\
-        Transaction Frequency (TPS) & 10---100 \\
-        Transaction Amount Range & 0.0---25,691.16 USD \\
-        Simulation Duration & 30---60 s \\
-        Single-hop Latency & 30 ms \\ 
-        \bottomrule
-      \end{tabular}
+    The simulation area is set to \(2000 \times 2000~\mathrm{m}^2\). A total of 20 GNs are randomly and uniformly deployed in the simulation area, and a single UAV is used to collect data from all GNs. The data center is located at \((1000,1000)~\mathrm{m}\). The UAV departs from the data center, visits all GNs according to the generated visiting order, collects the required data from each GN, and returns to the data center after completing the mission. For each data size, 200 independent simulation runs are conducted with different random GN deployments. The reported MCT and flight distance results are the average values over these 200 runs. The required data amount of each GN is denoted by \(C\). The data amount is set to \(C\in\{1,2,4,8,16,32\}~\mathrm{MB}\). Table~6.1 lists the main simulation parameters used in the performance evaluation.
+
+    Three schemes are compared in the simulation. The first scheme is the Convex shortest path, which computes the shortest geometric path passing through the communication region of each GN. This scheme is used as a geometric path baseline because its main purpose is to reduce the flight distance through the GN communication regions. The second scheme is the V-shaped scheme, which adopts the V-shaped data collection trajectory. This scheme considers the trajectory inside the communication region of each GN and adjusts the UAV service trajectory according to the data amount. The third scheme is the proposed RPA-BO scheme. This scheme uses reference-path attractors to provide global geometric guidance during local trajectory planning and applies the Boundary-Overlap Strategy to handle consecutive overlapping GN communication regions. When adjacent communication regions overlap, the UAV can select a switching point inside the overlapping region instead of leaving one communication boundary and entering another. For a fair comparison, the three schemes are evaluated under the same GN deployment and the same visiting order in each simulation run. Therefore, the differences in MCT and flight distance mainly result from the trajectory planning and data collection strategy adopted by each scheme.
+
+    \begin{table}[!t]
+        \centering
+        \caption{Simulation parameters.}
+        \label{tab:simulation-parameters}
+        \begin{tabular}{ll}
+            \toprule
+            \textbf{Parameter} & \textbf{Value} \\
+            \midrule
+            Simulation area & \(2000 \times 2000~\mathrm{m}^2\) \\
+            Data center position & \((1000,1000)~\mathrm{m}\) \\
+            UAV altitude & \(50~\mathrm{m}\) \\
+            UAV maximum speed & \(20~\mathrm{m/s}\) \\
+            GN transmit power & \(-40~\mathrm{dBm}\) \\
+            Carrier frequency & \(2~\mathrm{GHz}\) \\
+            Bandwidth & \(2~\mathrm{MHz}\) \\
+            Noise power spectral density & \(-174~\mathrm{dBm/Hz}\) \\
+            SNR threshold & \(2.6~\mathrm{dB}\) \\
+            Path-loss exponent & \(1.3165\) \\
+            LoS additional loss & \(3~\mathrm{dB}\) \\
+            NLoS additional loss & \(13~\mathrm{dB}\) \\
+            LoS probability parameters & \(\alpha=11.95,\ \beta=0.14\) \\
+            \bottomrule
+        \end{tabular}
     \end{table}
 
-\section{Comparison Algorithms}
-    \begin{enumerate}
-        \item \textbf{Shortest Path}: Shortest path routing is currently employed in the Lightning Network to determine the path between senders and receivers for payments.
-        \item \textbf{Flash}~\cite{Flash}: Flash differentiates between high-value ???elephant??? payments and low-value ???mice??? payments. The strategy can improve success rates.
-        \item \textbf{Deter-Pay}~\cite{Deter-Pay}: Deter-Pay combines precomputed candidate paths with a probing-based balance reservation mechanism.
-    \end{enumerate}
-\section{Performance Under Different Workloads}
-  
-    The experiment aims to verify the algorithm's comprehensive performance under varying transaction frequencies. The experimental setup configures the transaction frequency per second from 10 TPS to 100 TPS. The transaction success rate, execution time, and transaction fees incurred per satoshi are recorded with the varying frequencies.
-    
-    \begin{figure}[htbp]
-        \centering
-        \includegraphics[width=\textwidth]{./figures/Success_rate.pdf}
-        \caption{Success rate under different workloads.}
-        \label{fig:Success_rate_TPS}
-    \end{figure}
-    
-    \begin{figure}[htbp]
-        \centering
-        \includegraphics[width=\textwidth]{./figures/Excution_time.pdf}
-        \caption{Execution time under different workloads.}
-        \label{fig:Excution_time_TPS}
-    \end{figure}
-    
-    \begin{figure}[htbp]
-        \centering
-        \includegraphics[width=\textwidth]{./figures/Transection_Fee.pdf}
-        \caption{Transaction fees under different workloads.}
-        \label{fig:Transection_Fee_TPS}
-    \end{figure}
 
-    
-    Transaction Success Rate: Figure~\ref{fig:Success_rate_TPS} illustrates the variation in transaction success rate as the workload (TPS) increases. The proposed method consistently outperforms other protocols, including Deter-Pay, Flash, and Shortest Path, with all tested workloads. The method achieves the highest success rate even at a transaction frequency of 100 TPS and demonstrates its efficiency under high-load conditions. In contrast, Deter-Pay and Flash exhibit fluctuating or declining success rates as the workload increases, and Shortest Path consistently has the lowest performance among all evaluated methods.
-
-    Transaction Latency: Figure~\ref{fig:Excution_time_TPS} displays the variation in transaction delay with different transaction workload frequencies. Compared to Deter-Pay and Flash, the proposed method exhibits stable and comparatively lower execution times. Shortest Path that depends solely on the most basic shortest path algorithm based on network topology, achieves the highest execution efficiency. The proposed method employs a two-phase payment process. A successful first payment phase can reduce overall transaction delay. Deter-Pay's requirement for path probing and channel reservation contributes to its higher transaction delay, especially as higher transaction frequencies may necessitate multiple probing and reservation attempts. Flash exhibits lower latency than Deter-Pay, but the method may incur higher delays due to repeated attempts. Flash lacks effective adaptation because of prior failures.
-
-    Transaction Fees: Figure~\ref{fig:Transection_Fee_TPS} illustrates the variation in transaction fees under different transaction workloads. The proposed method incurs slightly higher fees than Deter-Pay but demonstrates a significant fee advantage over Flash. Shortest Path consistently yields the lowest transaction fees. The result is attributed to its reliance on a single path and a short hop count.
-
-    
-\section{Performance with Scaled Capacities}
+\section{Performance Comparison}
+    Fig.~\ref{fig:initial_routes} shows the initial trajectory of the UAV in the 2 km กั 2 km area. In this simulation scenario, 20 GNs are randomly and uniformly deployed in the area. By calculation, the communication radius (D) is approximately equal to 200 m. The UAV directly visits the center of each GN according to the visiting order. This trajectory is used to illustrate the GN distribution and the visiting order of the UAV before applying the proposed trajectory design.
+    \begin{figure*}[!t]
+		\centering
+		\includegraphics[width=0.7\textwidth]{./figures/run_167_initial_routes.png}
+        \caption{Initial trajectory of the UAV in a \(2~\mathrm{km} \times 2~\mathrm{km}\) area.}
+		\label{fig:initial_routes}
+	\end{figure*}
 
 
-    
-\label{sec:performance_scaled_capacities}
-    Currently, the average channel capacity of the Lightning Network is approximately 900,000 Satoshis. As off-chain payments become more widespread and more PCNs are practically deployed, channel capacities are expected to increase. This experiment was conducted to verify the effectiveness of the proposed method in the future development of payment channels. The simulation was examined with channel capacities scaled from one-fold to tenfold. These simulations were performed with a fixed testing duration and a constant transaction frequency.
+    Fig.~\ref{fig:final_trajectories} compares the final trajectories of the proposed RPA-BO scheme, Convex shortest path, and V-shaped scheme under the \(8~\mathrm{MB}\) data size. In this case, the Convex shortest path has the shortest flight distance of \(4407.78~\mathrm{m}\), but its MCT is \(488.59~\mathrm{s}\). This result indicates that a shorter geometric flight distance does not necessarily lead to a shorter MCT, because the UAV may collect data near the communication boundary, where the transmission rate is relatively low. The V-shaped scheme reduces the MCT to \(341.12~\mathrm{s}\) by moving the UAV deeper into the GN communication region, so that the UAV can collect data at a higher transmission rate, its flight distance increases to \(6766.34~\mathrm{m}\). The proposed RPA-BO scheme achieves the shortest MCT of \(303.40~\mathrm{s}\) with a flight distance of \(6053.94~\mathrm{m}\).
+    \begin{figure*}[!t]
+		\centering
+		\includegraphics[width=0.7\textwidth]{./figures/run_167_final_trajectories.png}
+        \caption{Final trajectories of compared schemes under 8 MB data size.}
+		\label{fig:final_trajectories}
+	\end{figure*}
 
-    \begin{figure}[htbp]
-        \centering
-        \includegraphics[width=\textwidth]{./figures/Success_rate_diff_channelsize.pdf}
-        \caption{Success rate under different channel sizes.}
-        \label{fig:Success_rate__diff_channelsize}
-    \end{figure}
-    
-    \begin{figure}[htbp]
-        \centering
-        \includegraphics[width=\textwidth]{./figures/Excution_time_diff_channelsize.pdf}
-        \caption{Execution time under different channel sizes.}
-        \label{fig:Excution_time__diff_channelsize}
-    \end{figure}
-    
-    \begin{figure}[htbp]
-        \centering
-        \includegraphics[width=\textwidth]{./figures/Transection_Fee_diff_channelsize.pdf}
-        \caption{Transaction fees under different channel sizes.}
-        \label{fig:Transection_Fee__diff_channelsize}
-    \end{figure}
+    This improvement mainly comes from two aspects. First, unlike schemes that restrict the entry and exit points to the boundaries of communication regions, the BO strategy optimizes the service switching locations within overlapping communication regions. As a result, after completing data collection from one GN, the UAV can immediately switch to serving the next GN within the overlap area, without first leaving the communication region of the current GN and then entering that of the next GN. This switching strategy reduces unnecessary flight distance and redundant movement between neighboring communication regions. Second, the RPA mechanism provides global geometric guidance during local trajectory planning, so the UAV trajectory can remain closer to the global geometric direction while still considering the data collection requirement. Therefore, the proposed RPA-BO scheme can reduce the flight distance and shorten the mission completion time.
 
-    Figure~\ref{fig:Success_rate__diff_channelsize} illustrates that the transaction success rates of all routing methods increase with the enhancement of channel capacity. Under conditions of increased channel capacity, the proposed method demonstrates a significant lead over Deter-Pay and Shortest Path methods.
+    \begin{figure*}[!t]
+		\centering
+		\includegraphics[width=1\textwidth]{./figures/final_mct_comparison.png}
+        \caption{Mission completion time under different data sizes.}
+		\label{fig:mct_comparison}
+	\end{figure*}
 
-    Figure~\ref{fig:Excution_time__diff_channelsize} indicates a gradual reduction in the execution time of the proposed method as channel capacity increases. This reduction is attributed to the increased likelihood of successful transactions in the algorithm's first payment phase with the larger channel capacity. Path score calculation and transaction splitting are used to achieve this success. This approach reduces the need for second-stage failed handling and consequently lowers transaction delay. In terms of transaction delay, the algorithm exhibits a more significant advantage compared to Deter-Pay and Flash.
-    
-    Finally, regarding transaction fees, Figure~\ref{fig:Transection_Fee__diff_channelsize} shows that the proposed method offers a lower fee advantage compared to Flash. Although its fees are higher than those of Deter-Pay and Shortest Path, the method demonstrates a significant advantage in success rate. The algorithm effectively balances success rate, execution time, and transaction fees.
-    
-\section{Performance with Failed Handling Mechanisms}
+    Fig.~\ref{fig:mct_comparison} shows the average MCT of the three schemes under different data sizes. Each point represents the average result over 200 independent random GN deployments. The proposed RPA-BO scheme achieves the shortest average flight distance under all tested data sizes.
 
-    The experiment was designed to verify the effectiveness of the algorithm's second phase, called Phase II: Failed Handling. The experiments with or without Phase II were conducted. The results were subsequently tested under different Capacity Scales.
-    
-    \begin{figure}[tb] 
-        \centering
-        \includegraphics[width=\textwidth]{./figures/success_rate_w_wo_fail.pdf} 
-        \caption{Success rate with and without failed handling mechanisms.} 
-        \label{fig:success_rate_w_wo_fail}
-    \end{figure}
-    
-    \begin{figure}[tb]
-        \centering
-        \includegraphics[width=\textwidth]{./figures/success_vol_w_wo_fail.pdf} 
-        \caption{Successful volume with and without failed handling mechanisms.}
-        \label{fig:success_vol_w_wo_fail}
-    \end{figure}
-    
-    Figure~\ref{fig:success_rate_w_wo_fail} reveals that under smaller channel capacity scale factors, the Phase II: Failed Handling mechanism significantly enhances the transaction success rate. When channel capacity is larger, the improvement in success rate by failed handling becomes less prominent. Most transactions can be completed in the first phase. This experimental result corroborates the findings in Section~\ref{sec:performance_scaled_capacities} regarding lower transaction delay with larger channel capacity. This outcome is similarly attributed to the increased success rate in the first phase.
+    When \(C=1~\mathrm{MB}\), the average MCT values of the Convex shortest path, V-shaped scheme, and proposed RPA-BO scheme are \(276.14~\mathrm{s}\), \(314.66~\mathrm{s}\), and \(274.57~\mathrm{s}\), respectively. In this low-data-size case, the required data amount is small, so the flight distance is a major factor affecting the MCT. Nevertheless, the MCT of the proposed RPA-BO scheme is lower than that of the Convex shortest path because the proposed scheme does not merely reduce the flight distance, but also considers the data collection trajectory inside the GN communication regions. Even when the required data amount is small, selecting appropriate data collection trajectories and overlap switching points can reduce the time spent on service transitions and data collection, thereby leading to a shorter overall MCT.
 
-    Figure~\ref{fig:success_vol_w_wo_fail} demonstrates a significant increase in the total successful transaction volume ratio regardless of the channel capacity. The Phase II failed handling method effectively satisfies large transaction demands and enhances transaction completion rates. The results are achieved by enabling re-attempts based on probing results and intelligently allocating large transaction amounts to available channels.
+    When \(C=4~\mathrm{MB}\), the average MCT values of the Convex shortest path, V-shaped scheme, and proposed RPA-BO scheme are \(396.95~\mathrm{s}\), \(345.01~\mathrm{s}\), and \(309.98~\mathrm{s}\), respectively. Compared with the Convex shortest path and the V-shaped scheme, the proposed RPA-BO scheme reduces the average MCT by \(86.97~\mathrm{s}\) and \(35.03~\mathrm{s}\), respectively. This result shows that the proposed RPA-BO scheme can effectively reduce MCT when both flight distance and data collection time have influence on the mission.
+
+    When the data size further increases, the proposed RPA-BO scheme remains effective. When \(C=32~\mathrm{MB}\), the average MCT values of the Convex shortest path, V-shaped scheme, and proposed RPA-BO scheme are \(1600.92~\mathrm{s}\), \(629.42~\mathrm{s}\), and \(610.41~\mathrm{s}\), respectively. Unlike approaches that mainly focus on reducing the flight distance, the proposed scheme also improves the efficiency of the data collection process. As the required data amount increases, communication efficiency becomes increasingly important. The proposed RPA-BO scheme effectively reduces data collection time and maintains the shortest MCT among all compared schemes.
+
+    The simulation results show that the proposed RPA-BO scheme achieves the shortest average MCT under all considered data sizes. Although the Convex shortest path obtains the shortest flight distance, its MCT increases rapidly as the data size increases. This result indicates that reducing flight distance alone is insufficient when the data size increases. The V-shaped scheme reduces the data collection time by moving the UAV deeper into the GN communication region when necessary, but this also increases the flight distance. The proposed RPA-BO scheme further reduces MCT by using reference-path attractors and overlap switching points. The reference-path attractors provide global geometric guidance during local trajectory planning, while the Boundary-Overlap Strategy allows the UAV to make better use of overlapping communication regions. Therefore, the proposed RPA-BO scheme can reduce flight distance and shorten the overall MCT under different data sizes. 
+
+
+    \begin{figure*}[!t]
+		\centering
+		\includegraphics[width=1\textwidth]{./figures/final_length_comparison.png}
+        \caption{Flight distance under different data sizes.}
+		\label{fig:length_comparison}
+	\end{figure*}
+
+    Fig.~\ref{fig:length_comparison} shows the average flight distance of the three schemes under different data sizes. Each point represents the average result over 200 independent random GN deployments. As shown in Fig. 8, the shortest flight distance does not correspond to the shortest MCT, especially when the required data amount becomes large. This result confirms that flight distance and data collection time should be considered together. 
+
+    The V-shaped scheme has a longer flight distance because the UAV may move deeper into the GN communication regions to improve the transmission rate. In contrast, the proposed RPA-BO scheme achieves a shorter flight distance than the V-shaped scheme under all tested data sizes. When \(C=4~\mathrm{MB}\), the average flight distances of the V-shaped scheme and the proposed RPA-BO scheme are \(6894.67~\mathrm{m}\) and \(6191.67~\mathrm{m}\), respectively. The proposed RPA-BO scheme reduces the average flight distance by \(703.00~\mathrm{m}\) while also reducing the MCT, as shown in Fig.~8. When \(C=32~\mathrm{MB}\), the average flight distances of the V-shaped scheme and the proposed RPA-BO scheme are \(8534.91~\mathrm{m}\) and \(8170.13~\mathrm{m}\), respectively. The proposed RPA-BO scheme still maintains a shorter flight distance. This improvement is mainly attributed to the reference-path attractors and overlap switching points. The reference-path attractors guide the local trajectory planning toward the global geometric direction, while the overlap switching points allow the UAV to switch services more efficiently in overlapping communication regions. This result indicates that the proposed scheme can reduce the flight distance while maintaining the benefits of efficient data collection.
+
+    The simulation results demonstrate that reducing the flight distance alone is insufficient to reduce the MCT in UAV-assisted WSN data collection. The MCT is jointly affected by the UAV flight distance, the data collection trajectory within GN communication regions. By considering these factors together, the proposed RPA-BO scheme achieves the shortest MCT among the compared schemes under the tested data amounts. These results confirm that integrating global geometric guidance, local data collection trajectory design, and service switching in overlapping communication regions is effective in reducing the overall MCT.    
+
 
 %------------------------- Conclusion and Future Works -------------------------%
 \chapter{Conclusion and Future Work} \label{Chap:Conclusion}
 
 \section{Conclusion}
 
-    This thesis presents a two-phase routing algorithm to improve efficiency and reliability in PCNs. The algorithm consists of an initial payment attempt and a re-exploration phase triggered upon failure. Adaptive responses can be enabled to dynamic or inconsistent network conditions.
     
-    Routing decisions are informed by a combination of factors, including channel capacity, balance status, fee conditions, and usage patterns. The integrated approach improves path selection, reduces payment failure rates, and lowers overall transaction costs.
-    
-    Routing performance was examined based on the simulated transaction workloads and network conditions. The proposed algorithm typically outperforms existing methods in terms of success rate, latency, and cost. The evaluation results confirm the effectiveness of the algorithm for scalable PCN routing.
-
 \section{Future Work}
 	
-    In this research, it is assumed that channel-related information can be obtained through trusted nodes. Nevertheless, considering the high demands for privacy protection in decentralized platforms, it is imperative that no sensitive data is compromised through any means. Therefore, future work ought to explore the development of more efficient routing mechanisms and also guarantee the privacy of every node.
-	
+  
 }\end{thesis}
 
 
