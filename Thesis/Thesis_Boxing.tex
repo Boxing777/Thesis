@@ -344,6 +344,7 @@ National Cheng Kung University \\
     Algorithm~\ref{alg:rpa} summarizes the procedure for constructing the shortest geometric reference path and extracting the corresponding reference-path attractors. Based on the extracted attractors and the RPA-guided flight-time term, Section~5.2 presents the single-node trajectory planning method, including the generation of candidate FIP/FOP pairs, the determination of OH, and the evaluation of \(t_{c_i}\). Section~5.3 further describes how the trajectory planning process is modified when consecutive GNs have overlapping communication regions.
 
     \begin{algorithm}[H]
+    \small
     \caption{Reference Path Construction and Attractor Extraction}
     \label{alg:rpa}
     \KwIn{Communication regions \(\{\mathcal{D}_i\}_{i=1}^{N}\) in the visiting order; data center \(\mathbf{q}_0\)}
@@ -351,40 +352,17 @@ National Cheng Kung University \\
 
     Solve the SOCP problem in \eqref{eq:reference-path-construction} to obtain \(\{\mathbf{r}_i^{\mathrm{in}},\mathbf{r}_i^{\mathrm{out}}\}_{i=1}^{N}\)\;
 
-    Construct the shortest geometric reference path \(\mathcal{P}_{\mathrm{ref}}\):
-    \[
-    \mathcal{P}_{\mathrm{ref}}:
-    \mathbf{q}_0
-    \rightarrow
-    \mathbf{r}_1^{\mathrm{in}}
-    \rightarrow
-    \mathbf{r}_1^{\mathrm{out}}
-    \rightarrow
-    \cdots
-    \rightarrow
-    \mathbf{r}_N^{\mathrm{in}}
-    \rightarrow
-    \mathbf{r}_N^{\mathrm{out}}
-    \rightarrow
-    \mathbf{q}_0 .
-    \]
+    Construct \(\mathcal{P}_{\mathrm{ref}}\) by connecting \(\mathbf{q}_0\), \(\mathbf{r}_1^{\mathrm{in}}\), \(\mathbf{r}_1^{\mathrm{out}}\), \(\ldots\), \(\mathbf{r}_N^{\mathrm{in}}\), \(\mathbf{r}_N^{\mathrm{out}}\), and \(\mathbf{q}_0\) in sequence\;
 
     Define \(\ell(\mathbf{p})\) as the cumulative path length from \(\mathbf{q}_0\) to point \(\mathbf{p}\) along \(\mathcal{P}_{\mathrm{ref}}\)\;
 
     \For{\(i=1\) \KwTo \(N\)}{
-        Extract the first reference-path point that lies within \(\mathcal{D}_i\):
-        \[
-        \mathbf{a}_i
-        =
-        \operatorname*{arg\,min}_{\mathbf{p}\in \mathcal{P}_{\mathrm{ref}}\cap \mathcal{D}_i}
-        \ell(\mathbf{p}).
-        \]
+        Extract the first reference-path point that lies within \(\mathcal{D}_i\)\;
+    
+        Set \(\mathbf{a}_i \gets \operatorname*{arg\,min}_{\mathbf{p}\in\mathcal{P}_{\mathrm{ref}}\cap\mathcal{D}_i}\ell(\mathbf{p})\)\;
     }
 
-    Set the terminal attractor as the data center:
-    \[
-    \mathbf{a}_{N+1}=\mathbf{q}_0 .
-    \]
+    Set the terminal attractor as \(\mathbf{a}_{N+1}\gets \mathbf{q}_0\)\;
 
     \Return \(\mathcal{P}_{\mathrm{ref}}\) and \(\{\mathbf{a}_i\}_{i=1}^{N+1}\)\;
     \end{algorithm}
@@ -464,6 +442,87 @@ National Cheng Kung University \\
     In this sequence, \(\mathbf{P}^{\mathrm{sw}}_{i,i+1}\) is used as the exit point of \(g_i\) and the entry point of \(g_{i+1}\). Similarly, \(\mathbf{P}^{\mathrm{sw}}_{i+1,i+2}\) connects the service trajectories of \(g_{i+1}\) and \(g_{i+2}\). Therefore, the group is planned as a single service unit with one entry point and one exit point.
 
     For each overlapping region, BO selects the switching point from a finite candidate set instead of searching over the entire continuous overlapping region. The candidate set is generated using two representative sampling directions. The first direction follows the line segment connecting the centers of the two adjacent GNs. Since different adjacent GN pairs may have different overlap depths. Therefore BO can adjust whether the service transition should occur earlier or later within the overlapping region. The second direction follows a perpendicular sampling line inside the overlapping region. This direction provides candidates with different inward depths within the overlapping region. Since different data amounts may require different collection depths, the perpendicular sampling line allows BO to adjust the switching location according to the data collection requirement. By combining these two representative directions, the T-shaped sampling method generates switching candidates for the overlapping region without searching all possible points in the continuous region.
+
+    For the \(m\)-th overlapping-node group \(G_m\), a candidate point sequence is written as
+    \begin{equation}
+        \mathcal{S}_m=
+        \left[
+        \mathrm{FIP}_i,
+        \mathbf{P}^{\mathrm{sw}}_{i,i+1},
+        \ldots,
+        \mathbf{P}^{\mathrm{sw}}_{j-1,j},
+        \mathrm{FOP}_j
+        \right].
+    \end{equation}
+
+    The first point in \(\mathcal{S}_m\) is the group entry point, and the last point is the group exit point. The intermediate points are switching points selected from the overlapping regions Given a candidate sequence, each GN uses the previous point in the sequence as its entry point and the next point as its exit point. After a candidate sequence \(\mathcal{S}_m\) is determined, the data collection time of each GN in the group is evaluated according to the V-shaped trajectory model described in Section~5.2. The collection-time term of the group is defined as the sum of the data collection times of all GNs in the group:
+    \begin{equation}
+        t_{c,m}=\sum_{k=i}^{j}t_{c_k}
+    \end{equation}
+    In addition to the collection-time term, the flight time before entering and after leaving the group must also be considered. Since the overlapping-node group is served as one continuous trajectory segment, the group has one entry point and one exit point. The flight-time term of the group is expressed as
+    \begin{equation}
+        t_{n,m}
+        =
+        \frac{\left\|\mathrm{FIP}_i-\mathrm{FOP}_{i-1}\right\|}{v_{\max}}
+        +
+        \frac{\left\|\mathbf{a}_{j+1}-\mathrm{FOP}_j\right\|}{v_{\max}}.
+    \end{equation}
+
+    Therefore, each candidate sequence is evaluated by
+    \begin{equation}
+        T_m=t_{c,m}+t_{n,m}.
+    \end{equation}
+
+    In (5.18), \(T_m\) denotes the evaluation time of a candidate sequence for the \(m\)-th overlapping-node group. The term \(t_{c,m}\) represents the total data collection time of the GNs in the group, while \(t_{n,m}\) represents the flight time associated with entering and leaving the group. The candidate sequence with the smallest \(T_m\) is selected as the service trajectory of the group. In (5.17), the first term represents the flight time from the FOP of the previous GN to the entry point of the group, and the second term represents the flight time from the exit point of the group toward the next attractor.
+
+    Since a group may contain more than two GNs, directly enumerating all possible combinations of entry points, switching points, and exit points may increase the search cost. BO therefore organizes the candidate points into layers. The first layer contains candidate FIP points of the first GN in the group, the intermediate layers contain candidate switching points generated in the overlapping regions, and the last layer contains candidate FOP points of the last GN. A dynamic programming search is then applied over these layers to find the candidate sequence with the smallest accumulated evaluation time.
+
+    After the trajectory of the group is determined, the selected \(\mathrm{FOP}_j\) is used as the previous service point for the next planning step. When the next GN is independent, the single-node trajectory planning method in Section~5.2 is applied. When another overlapping-node group is encountered, BO is applied again. The detailed procedure of BO is summarized in Algorithm~2.
+
+    \begin{algorithm}[!t]
+    \small
+    \caption{Boundary-Overlap Strategy for an Overlapping-Node Group}
+    \label{alg:bo}
+    \KwIn{Overlapping-node group \(G_m=\{g_i,g_{i+1},\ldots,g_j\}\); communication regions \(\{\mathcal{D}_k\}_{k=i}^{j}\); previous service point \(\mathrm{FOP}_{i-1}\); next attractor \(\mathbf{a}_{j+1}\)}
+    \KwOut{Selected candidate sequence \(\mathcal{S}_m\) and evaluation time \(T_m\)}
+
+    Generate the candidate FIP set of \(g_i\) and set it as \(\mathcal{L}_0\)\;
+
+    \For{\(k=i\) \KwTo \(j-1\)}{
+        Generate switching candidates in \(\mathcal{D}_k \cap \mathcal{D}_{k+1}\) by the T-shaped sampling method\;
+        Set the generated candidates as layer \(\mathcal{L}_{k-i+1}\)\;
+    }
+
+    Generate the candidate FOP set of \(g_j\) and set it as \(\mathcal{L}_{j-i+1}\)\;
+
+    \If{\(g_i\) is the first GN in the visiting order}{
+        Set \(\mathrm{FOP}_{i-1}\gets \mathbf{q}_0\)\;
+    }
+
+    \ForEach{\(p\in\mathcal{L}_0\)}{
+        Set \(\Phi_0(p)\gets \left\|p-\mathrm{FOP}_{i-1}\right\|/v_{\max}\)\;
+        Set \(\mathrm{Pred}_0(p)\gets \emptyset\)\;
+    }
+
+    \For{\(r=0\) \KwTo \(j-i\)}{
+        Set \(k=i+r\)\;
+        \ForEach{\(q\in\mathcal{L}_{r+1}\)}{
+            Compute \(\Phi_{r+1}(q)\) by selecting the predecessor \(p\in\mathcal{L}_r\) with the smallest accumulated evaluation time\;
+            Store the corresponding predecessor as \(\mathrm{Pred}_{r+1}(q)\)\;
+        }
+    }
+
+    Select \(p^{\mathrm{end}}\in\mathcal{L}_{j-i+1}\) with the smallest value of
+    \(\Phi_{j-i+1}(p)+\left\|\mathbf{a}_{j+1}-p\right\|/v_{\max}\)\;
+
+    Compute \(T_m\) according to the selected \(p^{\mathrm{end}}\)\;
+
+    Backtrack from \(p^{\mathrm{end}}\) using the stored predecessors to obtain \(\mathcal{S}_m\)\;
+
+    \Return \(\mathcal{S}_m\) and \(T_m\)\;
+    \end{algorithm}
+
+
 
 %------------------------- Performance Evaluation-------------------------%
 \chapter{Performance Evaluation}\label{Chap:Implementation}
