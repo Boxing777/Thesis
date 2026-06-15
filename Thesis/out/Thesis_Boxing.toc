@@ -1,0 +1,17 @@
+\contentsline {heading}{Chapter}{ii}{}%
+\contentsline {chapter}{\numberline {1}Introduction}{1}{}%
+\contentsline {chapter}{\numberline {2}Related Work}{5}{}%
+\contentsline {chapter}{\numberline {3}System Model}{9}{}%
+\contentsline {section}{\numberline {3.1}\ignorespaces System Model}{9}{}%
+\contentsline {section}{\numberline {3.2}\ignorespaces Problem Formulation}{12}{}%
+\contentsline {chapter}{\numberline {4}Proposed Solution}{17}{}%
+\contentsline {section}{\numberline {4.1}\ignorespaces Reference Path Construction and RPA Mechanism}{18}{}%
+\contentsline {section}{\numberline {4.2}\ignorespaces Single-Node Trajectory Planning}{23}{}%
+\contentsline {section}{\numberline {4.3}\ignorespaces Overlapping-Node Group Trajectory Planning}{25}{}%
+\contentsline {chapter}{\numberline {5}Performance Evaluation}{30}{}%
+\contentsline {section}{\numberline {5.1}\ignorespaces Simulation Setup}{31}{}%
+\contentsline {section}{\numberline {5.2}\ignorespaces Performance Comparison}{32}{}%
+\contentsline {chapter}{\numberline {6}Conclusion and Future Work}{40}{}%
+\contentsline {section}{\numberline {6.1}\ignorespaces Conclusion}{40}{}%
+\contentsline {section}{\numberline {6.2}\ignorespaces Future Work}{41}{}%
+\contentsline {chapter}{References}{42}{}%

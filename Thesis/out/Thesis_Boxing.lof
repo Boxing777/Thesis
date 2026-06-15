@@ -1,0 +1,16 @@
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Illustration of the UAV data collection process.}}{10}{}%
+\contentsline {figure}{\numberline {3.2}{\ignorespaces UAV data collection process.}}{13}{}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Illustration of the reference-path attractors.}}{21}{}%
+\contentsline {figure}{\numberline {4.2}{\ignorespaces V-shaped trajectory for single-node data collection.}}{24}{}%
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Boundary-Overlap Strategy for overlapping GNs.}}{26}{}%
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces Initial trajectory of the UAV in a \(2~\mathrm {km} \times 2~\mathrm {km}\) area.}}{33}{}%
+\contentsline {figure}{\numberline {5.2}{\ignorespaces Final trajectories of compared schemes under 8 MB data size.}}{34}{}%
+\contentsline {figure}{\numberline {5.3}{\ignorespaces Mission completion time under different data sizes.}}{35}{}%
+\contentsline {figure}{\numberline {5.4}{\ignorespaces Flight distance under different data sizes.}}{37}{}%
+\contentsline {figure}{\numberline {5.5}{\ignorespaces MCT distribution under heterogeneous data amounts.}}{38}{}%
+\addvspace {10\p@ }
