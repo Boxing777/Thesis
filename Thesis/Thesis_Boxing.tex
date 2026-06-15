@@ -612,6 +612,15 @@ National Cheng Kung University \\
 
     The V-shaped scheme has a longer flight distance because the UAV may move deeper into the GN communication regions to improve the transmission rate. In contrast, the proposed RPA-BO scheme achieves a shorter flight distance than the V-shaped scheme under all tested data sizes. When \(C=4~\mathrm{MB}\), the average flight distances of the V-shaped scheme and the proposed RPA-BO scheme are \(6894.67~\mathrm{m}\) and \(6191.67~\mathrm{m}\), respectively. The proposed RPA-BO scheme reduces the average flight distance by \(703.00~\mathrm{m}\) while also reducing the MCT, as shown in Fig.~8. When \(C=32~\mathrm{MB}\), the average flight distances of the V-shaped scheme and the proposed RPA-BO scheme are \(8534.91~\mathrm{m}\) and \(8170.13~\mathrm{m}\), respectively. The proposed RPA-BO scheme still maintains a shorter flight distance. This improvement is mainly attributed to the reference-path attractors and overlap switching points. The reference-path attractors guide the local trajectory planning toward the global geometric direction, while the overlap switching points allow the UAV to switch services more efficiently in overlapping communication regions. This result indicates that the proposed scheme can reduce the flight distance while maintaining the benefits of efficient data collection.
 
+    \begin{figure*}[!t]
+		\centering
+		\includegraphics[width=1\textwidth]{./figures/summary_mct_boxplot.png}
+        \caption{MCT distribution under heterogeneous data amounts.}
+		\label{fig:summary_mct_boxplot}
+	\end{figure*}
+
+    To further evaluate the proposed scheme under heterogeneous data requirements, an additional experiment is conducted in which the required data amount of each GN is randomly generated from 1 MB to 32 MB. Fig.~\ref{fig:summary_mct_boxplot} shows the MCT distribution of the compared schemes under heterogeneous data amounts. The proposed RPA-BO scheme achieves the lowest average MCT among the compared schemes. The average MCT values of the V-shaped scheme, Convex shortest path, and proposed RPA-BO scheme are 387.82 s, 616.05 s, and 360.61 s, respectively. Compared with the V-shaped scheme, the proposed RPA-BO scheme reduces the average MCT by 27.21 s, corresponding to a \(7.02\%\) reduction. This result indicates that the proposed scheme remains effective when different GNs have different data requirements.
+
     The simulation results demonstrate that reducing the flight distance alone is insufficient to reduce the MCT in UAV-assisted WSN data collection. The MCT is jointly affected by the UAV flight distance, the data collection trajectory within GN communication regions. By considering these factors together, the proposed RPA-BO scheme achieves the shortest MCT among the compared schemes under the tested data amounts. These results confirm that integrating global geometric guidance, local data collection trajectory design, and service switching in overlapping communication regions is effective in reducing the overall MCT.    
 
 
@@ -620,9 +629,12 @@ National Cheng Kung University \\
 
 \section{Conclusion}
 
-    
+    This thesis studied trajectory planning for mission completion time reduction in UAV-assisted data collection in WSNs. The mission completion time was affected by both the flight time between GNs and the data collection time within each GN communication region. A shortest geometric path alone could reduce the flight distance, but such a path could also keep the UAV near the boundary of communication regions and increase the data collection time. Therefore, this thesis considered the coupling between the flight trajectory and the data collection trajectory.
+
+    This thesis proposed a trajectory planning method that combines the Reference-Path Attractor (RPA) mechanism and the Boundary-Overlap Strategy (BO). The RPA mechanism used a shortest geometric reference path to provide global directional guidance for local trajectory adjustment. For single-node service, the UAV adjusted the FIP, OH, and FOP according to the required data amount and the communication condition. For consecutive GNs with overlapping communication regions, BO allowed flexible service switching inside the overlap region and searched for a shorter continuous service trajectory. Simulation results showed that the proposed method reduced the overall MCT compared with the benchmark methods under different data requirements. The results also showed that the proposed method maintained a shorter flight distance while reducing the data collection time, which confirms the effectiveness of jointly considering flight trajectory, data collection trajectory, and overlap-aware service switching.
+
 \section{Future Work}
-	
+	Several directions can be further studied in future work. First, the current study assumes a fixed UAV altitude and a fixed flight speed except during hovering. Future studies can include altitude and speed control to further reduce the MCT under practical UAV motion constraints. Second, this thesis focuses on a single-UAV data collection task. Extending the proposed method to multi-UAV scenarios can further improve mission efficiency in large-scale WSNs. Third, future work can consider UAV energy consumption, battery capacity, and more realistic channel variations to evaluate the proposed method under practical deployment conditions. Finally, the visiting order and the local trajectory planning process can be studied jointly to further improve the overall data collection performance.
   
 }\end{thesis}
 
