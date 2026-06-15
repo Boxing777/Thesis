@@ -168,387 +168,303 @@ National Cheng Kung University \\
 		\label{fig:system_model}
 	\end{figure*}
 
-     \noindent\textit{1) Transmission Model:} A delay-tolerant UAV-assisted WSN is considered, in which each ground node \(g_i\) stores sensing data and uploads the data to the UAV when the UAV enters its communication region. Each ground node is equipped with a single omnidirectional antenna and transmits with a fixed power \(P_t\) over a channel bandwidth \(B\). The uplink transmission rate from GN \(g_i\) to the UAV at time \(t\) is expressed as
-\begin{equation}
-    R_i(t)=B\log_2\left(1+\gamma_i(t)\right)
-\end{equation}
-in which \(\gamma_i(t)\) denotes the received signal-to-noise ratio (SNR) from GN \(g_i\) to the UAV at time \(t\). The SNR is given by
-\begin{equation}
-    \gamma_i(t)=\frac{P_t}{\sigma^2 L_{dB_i}(t)}
-\end{equation}
-where \(\sigma^2\) denotes the noise power at the UAV receiver, and \(L_{dB_i}(t)\) represents the air-to-ground path loss between GN \(g_i\) and the UAV at time \(t\). The UAV can successfully collect data only when the received SNR satisfies \(\gamma_i(t)\geq\bar{\gamma}\). To avoid transmission interference among ground nodes, only the ground node being served is allowed to transmit data to the UAV during its corresponding service interval.
+    \noindent\textit{1) Transmission Model:} A delay-tolerant UAV-assisted WSN is considered, in which each ground node \(g_i\) stores sensing data and uploads the data to the UAV when the UAV enters its communication region. Each ground node is equipped with a single omnidirectional antenna and transmits with a fixed power \(P_t\) over a channel bandwidth \(B\). The uplink transmission rate from GN \(g_i\) to the UAV at time \(t\) is expressed as
+    
+    \begin{equation}
+        R_i(t)=B\log_2\left(1+\gamma_i(t)\right)
+    \end{equation}
+    in which \(\gamma_i(t)\) denotes the received signal-to-noise ratio (SNR) from GN \(g_i\) to the UAV at time \(t\). The SNR is given by
+    \begin{equation}
+        \gamma_i(t)=\frac{P_t}{\sigma^2 L_{dB_i}(t)}
+    \end{equation}
+    where \(\sigma^2\) denotes the noise power at the UAV receiver, and \(L_{dB_i}(t)\) represents the air-to-ground path loss between GN \(g_i\) and the UAV at time \(t\). The UAV can successfully collect data only when the received SNR satisfies \(\gamma_i(t)\geq\bar{\gamma}\). To avoid transmission interference among ground nodes, only the ground node being served is allowed to transmit data to the UAV during its corresponding service interval.
+
+
+    \noindent\textit{2) Channel Model:} Considering that the mission completion time generally exceeds the channel coherence time and that the UAV position changes during the mission, a statistical channel model is adopted. The path loss from GN \(g_i\) to UAV can be expressed as
+    \begin{equation}
+        L_{dB_i}(t)=\left(\frac{4\pi f_c}{c}\right)^2 l_i^{\eta}\left[P_{\mathrm{LoS}_i}(t)\left(\xi_{\mathrm{LoS}}-\xi_{\mathrm{NLoS}}\right)+\xi_{\mathrm{NLoS}}\right]
+    \end{equation}
+    where \(f_c\) denotes the carrier frequency, \(c\) is the speed of light, and \(\eta\) is the path-loss exponent. The parameters \(\xi_{\mathrm{LoS}}\) and \(\xi_{\mathrm{NLoS}}\) represent the average additional path losses under LoS and NLoS propagation conditions, respectively. In addition, \(l_i(t)\) denotes the three-dimensional distance between GN \(g_i\) and the UAV, which is given by
+    \begin{equation}
+        l_i(t)=\sqrt{\left(U_x(t)-GN_{ix}\right)^2+\left(U_y(t)-GN_{iy}\right)^2+H^2}
+    \end{equation}
+    where \(\left(GN_{ix},GN_{iy}\right)\) is the horizontal coordinate of GN \(g_i\), \(\left(U_x(t),U_y(t)\right)\) is the horizontal coordinate of the UAV at time \(t\), and \(H\) is the fixed flying altitude of the UAV.
+    
+    The LoS probability between GN \(g_i\) and the UAV is modeled as
+    \begin{equation}
+        P_{\mathrm{LoS}_i}(t)=\frac{1}{1+\alpha \exp\left[-\beta\left(\theta_i(t)-\alpha\right)\right]}
+    \end{equation}
+    where \(\alpha\) and \(\beta\) are parameters determined by the propagation environment. The elevation angle from GN \(g_i\) to the UAV at time \(t\) is denoted by \(\theta_i(t)\), which is defined as
+    \begin{equation}
+        \theta_i(t)=\frac{180}{\pi}\arcsin\left(\frac{H}{l_i(t)}\right).
+    \end{equation}
+
+    According to this channel model, the path loss is affected by both the UAV--GN distance and the elevation angle. When the UAV moves closer to a GN, the three-dimensional distance decreases and the elevation angle increases, which generally improves the LoS probability and reduces the average path loss. Therefore, the UAV trajectory directly affects the received SNR and the corresponding data collection time.
 
 \section{Problem Formulation}
+    In the considered single-UAV data collection mission, all GNs must be served within one flight. The UAV starts from the data center, collects the required data from each GN, and returns to the data center. For a given transmit power \(P_t\), the communication radius of each GN is determined by the SNR threshold \(\bar{\gamma}\). Let \(D\) denote the maximum horizontal distance between the UAV and a GN such that the received SNR is equal to \(\bar{\gamma}\). When the UAV is located inside the communication region with radius \(D\), the received SNR is no less than the required threshold, and the UAV can successfully receive data from the corresponding GN. The value of \(D\) is obtained according to the adopted LoS-based air-to-ground channel model.
+	
+    \begin{figure*}[!t]
+		\centering
+		\includegraphics[width=1\textwidth]{./figures/uav_data_collection.png}
+		\caption{UAV data collection process.} 
+		\label{fig:uav_data_collection}
+	\end{figure*}
 
+    The MCT of the UAV is obtained by accumulating the service time required for all GNs. For each GN, the service time consists of the flight time required to reach its communication region and the data collection time spent within that region. The index \(i\) follows the service sequence along the UAV trajectory. The GN visiting sequence is first determined by a genetic algorithm (GA), and the proposed method plans the complete UAV trajectory based on this sequence. As shown in Fig.~\ref{fig:uav_data_collection}, GN \(g_i\) is served independently, whereas GN \(g_{i+1}\) and GN \(g_{i+2}\) share an overlapping communication region.
 	
-	
+    UAV service trajectory is described by three key points: the flying-in point \(\mathrm{FIP}_i\), the optimal hovering or turning point \(\mathrm{OH}_i\), and the flying-out point \(\mathrm{FOP}_i\). The UAV first flies from the previous service point to \(\mathrm{FIP}_i\), and this flight duration is denoted by \(t_{n_i}\). After entering the communication region of GN \(g_i\), the UAV collects data while moving from \(\mathrm{FIP}_i\) to \(\mathrm{FOP}_i\) through \(\mathrm{OH}_i\). The corresponding data collection time is denoted by \(t_{c_i}\).
+
+    When the communication regions of two consecutive GNs do not overlap, the UAV enters and leaves the communication region of each GN through its own FIP and FOP, respectively. In this case, \(\mathrm{FIP}_i\) and \(\mathrm{FOP}_i\) are located on the boundary of the communication region with radius \(D\), and the data collection trajectory of GN \(g_i\) is represented as
+    \begin{equation}
+        \mathrm{FIP}_i \rightarrow \mathrm{OH}_i \rightarrow \mathrm{FOP}_i.
+    \end{equation}
+
+    When the communication regions of GN \(g_{i+1}\) and GN \(g_{i+2}\) overlap, the service transition between the two GNs is represented by a common point selected from the overlapping region. Therefore, the FOP of GN \(g_{i+1}\) and the FIP of GN \(g_{i+2}\) are not forced to lie on the boundaries of their respective communication regions. To describe this service transition, this thesis introduces an overlap switching point, denoted by \(P^{\mathrm{sw}}_{i+1,i+2}\). The switching point satisfies
+    \begin{equation}
+        P^{\mathrm{sw}}_{i+1,i+2} \in D_{i+1} \cap D_{i+2}
+    \end{equation}
+    where \(D_i\) denotes the communication region of GN \(g_i\). The switching point simultaneously serves as the FOP of GN \(g_{i+1}\) and the FIP of GN \(g_{i+2}\), which is expressed as
+    \begin{equation}
+        \mathrm{FOP}_{i+1}=P^{\mathrm{sw}}_{i+1,i+2}=\mathrm{FIP}_{i+2}.
+    \end{equation}
+
+    The service trajectory across the overlapping communication regions of GN \(g_{i+1}\) and GN \(g_{i+2}\) can be represented as
+    \begin{equation}
+        \mathrm{FIP}_{i+1} \rightarrow \mathrm{OH}_{i+1} \rightarrow P^{\mathrm{sw}}_{i+1,i+2} \rightarrow \mathrm{OH}_{i+2} \rightarrow \mathrm{FOP}_{i+2}.
+    \end{equation} 
+    This representation indicates that the UAV completes the data collection of GN \(g_{i+1}\) before reaching the switching point, and then continues the data collection of GN \(g_{i+2}\) after passing through the same point. This setting keeps the trajectory continuous and allows the UAV to complete the service transition within the overlapping communication region, thereby avoiding unnecessary boundary departure and re-entry between consecutive GNs. For a group of consecutive overlapping GNs, the same concept is applied by defining an overlap switching point between each pair of adjacent GNs in the group.
+
+    Except for hovering-based data collection, the UAV flies at the maximum speed \(v_{\max}\). Therefore, the flight time is proportional to the corresponding flight distance. For the flight segment from the previous service point to \(\mathrm{FIP}_i\), the flight time \(t_{n_i}\) is expressed as
+    \begin{equation}
+        t_{n_i}=\frac{d_{i1}}{v_{\max}}
+    \end{equation}
+    where
+    \begin{equation}
+        d_{i1}=\left\|\mathrm{FIP}_i-\mathrm{FOP}_{i-1}\right\|.
+    \end{equation}
+
+    For \(i=1\), \(\mathrm{FOP}_0\) denotes the data center. If GN \(g_i\) and the previously served GN overlap, \(\mathrm{FIP}_i\) can be the corresponding overlap switching point, and the fly-in distance is adjusted accordingly. After completing the data collection task of the last GN, the UAV returns to the data center. The return time is given by
+    \begin{equation}
+        t^r=\frac{\left\|\mathrm{DC}-\mathrm{FOP}_N\right\|}{v_{\max}}
+    \end{equation}
+    where \(\mathrm{DC}\) denotes the data center.
+
+    The data collection time of GN \(g_i\), denoted by \(t_{c_i}\), is evaluated according to the adopted V-shaped collection trajectory. During this period, the UAV collects data while flying within the communication region. If the data collected during flight is insufficient, the UAV hovers directly above the corresponding GN to complete the remaining data collection. Let \(Q_i\) denote the required data amount of GN \(g_i\). The accumulated received data during the collection interval must satisfy
+    \begin{equation}
+        \int_{0}^{t_{c_i}} R_i(t)\,dt \geq Q_i.
+    \end{equation}
+    The MCT of the UAV is expressed as
+    \begin{equation}
+        T=\sum_{i=1}^{N}\left(t_{c_i}+t_{n_i}\right)+t^r.
+    \end{equation}
+
+    Let \(\mathcal{P}\) denote the set of service points associated with the UAV trajectory, including the FIPs, OHs, FOPs, and the overlap switching points when communication regions overlap. Based on the above definitions, the overall MCT reduction problem is formulated as
+    \begin{equation}
+    \begin{aligned}
+    \textbf{(P1):}\quad 
+    &\min_{U(t),\mathcal{P}}
+    \left[
+    \sum_{i=1}^{N}\left(t_{c_i}+t_{n_i}\right)+t^r
+    \right] \\
+    \text{s.t.}\quad 
+    &\gamma_i(t)\geq \bar{\gamma} \\
+    &\mathrm{FIP}_i,\mathrm{OH}_i,\mathrm{FOP}_i \in D_i \\
+    &P^{\mathrm{sw}}_{i,i+1} \in D_i \cap D_{i+1},\ i\in \mathcal{O} \\
+    &\int_{0}^{t_{c_i}} R_i(t)\,dt \geq Q_i
+    \end{aligned}
+    \end{equation}
+    Here, \(\mathcal{O}\) denotes the set of consecutive GN indices whose communication regions overlap, i.e., \(D_i \cap D_{i+1} \neq \emptyset\). Constraint (17a) ensures that the received SNR satisfies the required threshold during data collection. Constraint (17b) requires the key service points of each GN to lie within the corresponding communication region. Constraint (17c) defines the feasible region of the overlap switching point. Constraint (17d) guarantees that the required data amount of each GN is collected.
+
+    Problem \textbf{P1} is difficult to solve directly because the flight trajectory and the data collection trajectory are coupled. The selection of service points in \(\mathcal{P}\) affects both the flight time \(t_{n_i}\) and the data collection time \(t_{c_i}\). Moreover, when consecutive communication regions overlap, the overlap switching points affect the continuity of the service trajectory across adjacent GNs. Therefore, this thesis addresses \textbf{P1} through two trajectory planning components in the proposed solution: single-node trajectory planning and overlapping-node group trajectory planning. The RPA mechanism provides reference-path attractors for both components, whereas the BO strategy is specifically applied to overlapping-node groups to determine feasible service switching points within overlapping communication regions.
+
 %------------------------- Proposed Solution -------------------------%
 \chapter{Proposed Solution}\label{Chap:Proposed Solution}
 	
-    This chapter provides a detailed explanation of the routing algorithm designed for PCN. The algorithm consists of three components: Routing Table Establishment, Route Analysis and Parallel Payment and Probing, and Failed Handling. The complete system architecture is illustrated in Figure~\ref{fig:system_artch}.
+    This chapter presents the proposed trajectory planning method for reducing the mission completion time (MCT) in UAV-assisted WSNs. Since the MCT is determined by both flight time and data collection time, a trajectory with the shortest geometric length does not necessarily lead to the shortest mission duration. Therefore, the proposed method is developed based on two design considerations: reducing both the flight distance and the data collection time of each GN.
 
-	\begin{figure*}[!t]
-		\centering
-		\includegraphics[width=1\textwidth]{./figures/sysarc.pdf
-}
-		\caption{Flow chart of the system.} 
-		\label{fig:system_artch}
-	\end{figure*}
+    To achieve this objective, this thesis first constructs a shortest geometric reference path to provide global directional information. Based on this reference path, the Reference-Path Attractor (RPA) mechanism is used to guide the subsequent local trajectory planning process. The final UAV trajectory is then determined according to the data collection requirement of each GN and the spatial relationship among communication regions. Through this design, the UAV trajectory can remain close to the shortest geometric reference path while allowing the UAV to move deeper into the communication region when such movement can improve the transmission rate and reduce the data collection time.
+
+    Based on the spatial relationship among GNs, the proposed trajectory planning process is divided into two cases. For an independent GN whose communication region does not overlap with the communication regions of other GNs, this thesis applies single-node trajectory planning to determine the corresponding service trajectory. For consecutive GNs with overlapping communication regions, this thesis adopts the Boundary-Overlap Strategy (BO), which treats the overlapping GNs as a group and uses the flexibility provided by the overlapping regions to determine the service trajectory.
+
+    The remainder of this chapter is organized as follows. Section~5.1 introduces the construction of the shortest geometric reference path and the Reference-Path Attractor (RPA) mechanism. Section~5.2 presents the single-node trajectory planning method. Section~5.3 describes the overlapping-node group trajectory planning method based on BO.
     
-\section{Notation and Definitions}
+\section{Reference Path Construction and RPA Mechanism}
 
-    Table~\ref{tab:notation} lists the primary symbols used throughout the proposed routing algorithm. These notations are essential for the detailed operations in each phase.
-    
- 
-    \begin{table}[t] 
-        \caption{List of Notations} 
-        \label{tab:notation} 
-        \centering 
-        \begin{tabularx}{\linewidth}{l X} 
-            \toprule
-            \textbf{Symbol} & \textbf{Description} \\
-            \midrule
-            $p$ & A specific path in the payment network \\
-            $p_i$ & An individual path (often indexed, e.g., $p_1, p_2, \ldots$) \\
-            $Y(p)$ & Capacity of path $p$ \\
-            $A$ & Total transaction amount to be split \\
-            $A_i$ & Amount of the transaction allocated to path $p_i$ \\
-            $k$ & Maximum number of paths to use for splitting, or number of top paths to probe \\
-            $\mathcal{P}$ & Set of all candidate paths for the transaction \\
-            $\mathcal{S}$ & Subset of currently selected paths from $\mathcal{P}$ \\
-            $\text{TotalFee}(p)$ & Total forwarding cost for path $p$ \\
-            $\alpha_{[v_i, v_j]}$ & Base fee for channel $(v_i, v_j)$ \\
-            $\beta_{[v_i, v_j]}$ & Fee rate for channel $(v_i, v_j)$ \\
-            $G$ & The current state of the network graph \\
-            $A_{rem}$ & Remaining transaction amount that needs to be paid \\
-            $\mathcal{R}$ & Set of successful probing results, each containing a path $p_i$ and its confirmed capacity $Y(p_i)$ \\
-            $\gamma$ & Splitting threshold \\ 
-            \bottomrule 
-        \end{tabularx}
-    \end{table}
+    The purpose of constructing a shortest geometric reference path is to provide a global geometric direction for the subsequent trajectory planning process. If the trajectory segment associated with each GN is determined only according to the data collection time of the current GN, the selection of FIP and FOP may lack guidance from the shortest geometric reference path. As a result, the subsequent trajectory may deviate from the shortest geometric reference path, leading to an increase in flight distance. Therefore, this thesis first computes a shortest geometric reference path that passes through all GN communication regions and then extracts reference-path attractors from this path. In this thesis, an attractor is defined as a reference point extracted from the shortest geometric reference path within the communication region of a GN. The attractor is used as a directional reference when evaluating candidate FIP/FOP pairs in later trajectory planning, but the UAV is not required to pass through the attractor.
 
-\section{Routing Table Establishment}
-
-    \begin{algorithm}[]
-        \caption{Candidate Path Computation from Node $v_s$}
-        \label{alg:candidate_paths}
-        \DontPrintSemicolon
-    
-        \KwIn{\;
-            Payment channel graph $G = (V, E)$; \;
-            Channel capacities $c_{[v_i, v_j]}$, fees $\alpha_{[v_i, v_j]}$, $\beta_{[v_i, v_j]}$; \;
-            Source node $v_s$.
-        }
-        \KwOut{\;
-            Edge-disjoint candidate paths $\{\mathcal{P}_{v_s \to v_d} \mid v_d \in V, v_d \neq v_s\}$.
-        }
-    
-        \SetKwInOut{Define}{Definition}
-        \Define{\;
-            $\mathcal{P}_{v_s \to v_d}$: Set of edge-disjoint candidate paths from $v_s$ to $v_d$. \;
-            $G^{res}$: Residual graph with updated capacities after each path discovery. \;
-            $p$: A path from $v_s$ to $v_d$, found via BFS. \;
-            $\text{TotalFee}(p) = \sum_{(v_i, v_j) \in p} \alpha_{[v_i, v_j]} + \beta_{[v_i, v_j]} \cdot A$: Forwarding cost of $p$ for amount $A$.
-        }
-    
-        \ForEach{$v_d \in V, v_d \neq v_s$}{
-            Initialize residual graph $G^{res}$ with capacities $c_{[v_i, v_j]}$\;
-            $\mathcal{P}_{v_s \to v_d} \gets \emptyset$\;
-        
-            \While{a path $p$ exists from $v_s$ to $v_d$ in $G^{res}$ via BFS}{
-                Let $p = \{v_s, \ldots, v_d\}$\;
-                $Y(p) \gets \min\{c_{[v_i, v_j]} \mid (v_i, v_j) \in p\}$\;
-        
-                \If{$Y(p) > 0$}{
-                    $A \gets Y(p)$\;
-                    $\alpha(p) \gets \sum\limits_{(v_i, v_j) \in p} \alpha_{[v_i, v_j]}$\;
-                    $\beta(p) \gets \sum\limits_{(v_i, v_j) \in p} \beta_{[v_i, v_j]}$\;
-                    Add $(p, A, \alpha(p), \beta(p))$ to $\mathcal{P}_{v_s \to v_d}$\;
-        
-                    \ForEach{$(v_i, v_j) \in p$}{
-                        $c_{[v_i, v_j]} \gets c_{[v_i, v_j]} - A$\;
-                        $c_{[v_j, v_i]} \gets c_{[v_j, v_i]} + A$\;
-                    }
-                }
-                \Else{
-                    Identify bottleneck edge $(v_b, v_b')$ on $p$ with minimal capacity\;
-                    Set $c_{[v_b, v_b']} \gets 0$ in $G^{res}$\;
-                }
-        
-                Remove all edges $(v_i, v_j)$ from $G^{res}$ where $c_{[v_i, v_j]} \leq 0$\;
-            }
-        }
-        \Return{$\{\mathcal{P}_{v_s \to v_d} \mid v_d \in V, v_d \neq v_s\}$}
-        \end{algorithm}
-    
-    This study assumes that each node within the Payment Channel Network (PCN) can acquire the overall network topology and initial channel capacities via the gossip protocol. In the initial phase of the system, a routing table is constructed for each node by executing the candidate path computation process defined in Algorithm~\ref{alg:candidate_paths}.
-    
-    To discover multiple candidate paths to each destination node $v_d$ (where $v_d \neq v_s$), this study proposes a breadth-first search (BFS)-based edge-disjoint path computation algorithm. The algorithm first initializes a residual graph based on the original channel capacities $c_{[v_i, v_j]}$, and then repeatedly performs BFS to identify feasible paths from the source node $v_s$ to $v_d$.
-    
-    Once a path $p$ is identified, the algorithm calculates the maximum transferable amount $Y(p)$ along the path, which is defined as the minimum residual capacity among all edges on the path. If $Y(p) > 0$, the algorithm further computes the total base fee and total fee rate along the path, and then stores the path along with its attributes as a candidate path.
-    
-    The residual graph is subsequently updated based on $Y(p)$. The capacity of each forward edge is reduced by $Y(p)$, while the capacity of the corresponding reverse edge is increased by $Y(p)$ to support potential backward transmissions. If $Y(p) = 0$, the algorithm identifies the bottleneck edge and removes it from the residual graph to facilitate the discovery of alternative paths.
-
-
-
-
-\section{Phase I: Routing Analysis with Concurrent Payment and Probing}
-
-
-\subsection{Path Scoring}
-
-    The algorithm proposes a composite scoring function to prioritize candidate paths for a given transaction request. Each path $p$ is evaluated based on three criteria: channel capacity, transaction fee, and channel usage frequency. The scoring function is defined as follows:
-
+    Following the service order defined in the problem formulation, the index \(i\) denotes the \(i\)-th GN visited by the UAV, and the communication region of this GN is denoted by \(\mathcal{D}_i\), as defined in the system model. For the given visiting sequence, this thesis computes a shortest geometric path that passes through all communication regions \(\mathcal{D}_i\). To formulate the reference path construction problem, two auxiliary reference-path points are introduced for each communication region. Let \(\mathbf{r}_i^{\mathrm{in}}\) and \(\mathbf{r}_i^{\mathrm{out}}\) denote the reference-path entry point and reference-path exit point associated with \(\mathcal{D}_i\), respectively. These two points are used only for constructing the shortest geometric reference path and are not the final FIP and FOP used for data collection. The shortest geometric reference path is obtained by solving
     \begin{equation}
-    \label{eq:path_scores}
-    \text{Score}(p) = \alpha \cdot \widetilde{Y(p)} - \beta \cdot \widetilde{F(p)} - \gamma \cdot \widetilde{U(p)}
+    \begin{aligned}
+    \min_{\{\mathbf{r}_i^{\mathrm{in}},\mathbf{r}_i^{\mathrm{out}}\}_{i=1}^{N}} \quad
+    & \left\|\mathbf{r}_1^{\mathrm{in}}-\mathbf{q}_0\right\|
+    + \sum_{i=1}^{N}\left\|\mathbf{r}_i^{\mathrm{out}}-\mathbf{r}_i^{\mathrm{in}}\right\| \\
+    &+ \sum_{i=1}^{N-1}\left\|\mathbf{r}_{i+1}^{\mathrm{in}}-\mathbf{r}_i^{\mathrm{out}}\right\|
+    + \left\|\mathbf{q}_0-\mathbf{r}_N^{\mathrm{out}}\right\| \\
+    \text{s.t.} \quad
+    & \mathbf{r}_i^{\mathrm{in}} \in \mathcal{D}_i \\
+    & \mathbf{r}_i^{\mathrm{out}} \in \mathcal{D}_i .
+    \end{aligned}
     \end{equation}
-    
-    where:
-    \begin{itemize}
-        \item $\widetilde{Y(p)}$ is the normalized maximum payable amount along path $p$ (i.e., normalized $Y(p)$);
-        \item $\widetilde{F(p)}$ is the normalized total forwarding fee to send amount $A$ along $p$, computed as $\sum\limits_{(v_i,v_j) \in p} \left( \alpha_{[v_i,v_j]} + \beta_{[v_i,v_j]} \cdot A \right)$;
-        \item $\widetilde{U(p)}$ is the normalized maximum usage frequency among all channels on path $p$, defined as $\max\limits_{(v_i,v_j) \in p} U_{[v_i, v_j]}$;
-        \item $\alpha, \beta, \gamma$ are user-defined weighting parameters that control the trade-off between capacity, fee, and congestion.
-    \end{itemize}
+    where \(\mathbf{q}_0\) denotes the data center. The first term represents the distance from the data center to the reference-path entry point of the first visited GN. The second term represents the geometric segment inside each communication region. The third term represents the distance from the reference-path exit point of the current GN to the reference-path entry point of the next visited GN. The last term represents the return distance from the last communication region to the data center. Since the objective function is composed of Euclidean norm terms and the feasible communication regions are convex, (5.1) can be formulated as a SOCP problem.
 
-    
-    Each candidate path is assigned a score utilizing Equation~\ref{eq:path_scores}. All paths are subsequently sorted in descending order of their scores. The top-ranked paths are preferred for subsequent payment and probing procedures.
+    The segment from \(\mathbf{r}_i^{\mathrm{in}}\) to \(\mathbf{r}_i^{\mathrm{out}}\) represents only the portion of the shortest geometric reference path inside the communication region \(\mathcal{D}_i\), rather than the actual data collection trajectory of the \(i\)-th GN. The final FIP, OH, and FOP are determined later according to the data requirement of the GN and the corresponding data collection time. Therefore, the shortest geometric reference path provides geometric reference information for the subsequent trajectory planning process.
 
-\subsection{Channel Usage Frequency Update Mechanism}
 
-    To quantify the usage frequency of each channel, as referenced in the path scoring model, each node within the system locally maintains historical records of its owned channels. Whenever a channel $(u, v)$ is utilized for a transaction, the node updates its usage frequency based on the elapsed time since its last usage. Specifically, an \textit{Exponentially Weighted Moving Average (EWMA)} is applied to emphasize recent activity and to adapt to temporal usage dynamics.
-    
-    This mechanism enables the system to reflect the real-time activeness of each channel and to incorporate such information into routing decisions. The frequency update procedure is formally described in Algorithm~\ref{alg:freq_update}.
-    
-    \begin{algorithm}[htbp]
-        \caption{Update Usage Frequency of Channel $U_{[v_i, v_j]}$}
-        \label{alg:freq_update}
-        \DontPrintSemicolon
-        
-        \KwIn{\;
-            Channel $(v_i, v_j)$; \;
-            EWMA update parameter $\lambda \in (0, 1)$
-        }
-        \KwOut{\;
-            Updated $U_{[v_i, v_j]}$ and last-used timestamp
-        }
-        
-        \SetKwInOut{Define}{Definition}
-        \Define{\;
-            $U_{[v_i, v_j]}$: Estimated usage frequency of channel $(v_i, v_j)$ based on Exponentially Weighted Moving Average (EWMA). \;
-            $last\_used_{[v_i, v_j]}$: The last time channel $(v_i, v_j)$ was used. \;
-            $\lambda$: Smoothing factor for EWMA, balancing recent usage and historical average.
-        }
-        
-        $now \gets$ current system time\;
-        
-        \If{channel $(v_i, v_j)$ was previously used}{
-            $\Delta t \gets now - last\_used_{[v_i, v_j]}$\;
-            \If{$\Delta t > 0$}{
-                $U_{[v_i, v_j]} \gets \lambda \cdot \frac{1}{\Delta t} + (1 - \lambda) \cdot U_{[v_i, v_j]}$\;
-            }
-        }
-        \Else{
-            $U_{[v_i, v_j]} \gets 1$ \tcp*{Initialize on first use}
-        }
-        
-        $last\_used_{[v_i, v_j]} \gets now$\;
-        
+    After the shortest geometric reference path is obtained, the RPA mechanism extracts one attractor for each GN. Let the shortest geometric reference path be denoted by \(\mathcal{P}_{\mathrm{ref}}\). The path \(\mathcal{P}_{\mathrm{ref}}\) is scanned according to the traveling direction from the data center. For the \(i\)-th GN, the candidate attractor points are the points on \(\mathcal{P}_{\mathrm{ref}}\) that lie within the communication region \(\mathcal{D}_i\). Let \(\ell(\mathbf{p})\) denote the cumulative path length from \(\mathbf{q}_0\) to point \(\mathbf{p}\) along \(\mathcal{P}_{\mathrm{ref}}\). The attractor of the \(i\)-th GN is defined as
+    \begin{equation}
+        \mathbf{a}_i=\operatorname*{arg\,min}_{\mathbf{p}\in\mathcal{P}_{\mathrm{ref}}\cap\mathcal{D}_i}\ell(\mathbf{p}).
+    \end{equation}
+    As shown in Fig.~\ref{fig:reference_path_attractors}, the shortest geometric path passes through the communication regions of the GNs according to the visiting direction. The triangular markers indicate the reference-path attractors extracted from this path. Each attractor is selected from the portion of the shortest geometric path that lies within the corresponding communication region.
+    \begin{figure*}[!t]
+		\centering
+		\includegraphics[width=1\textwidth]{./figures/reference_path_attractors.png}
+		\caption{Illustration of the reference-path attractors.} 
+		\label{fig:reference_path_attractors}
+	\end{figure*}
+
+    The attractor \(\mathbf{a}_i\) is selected as the first reference-path point that lies within the communication region of the \(i\)-th GN along the traveling direction. This early-entry selection preserves a longer available data collection interval along the reference path. Therefore, \(\mathbf{a}_i\) is used as the reference-path entry point associated with the \(i\)-th GN. The terminal attractor is set as the data center, \(\mathbf{a}_{N+1}=\mathbf{q}_0\).
+
+    The influence of the attractor can be explained by decomposing the flight-time term associated with the \(i\)-th GN. Let \(\mathbf{P}_i^{\mathrm{pre}}\) denote the point immediately before serving the \(i\)-th GN. The point \(\mathbf{P}_i^{\mathrm{pre}}\) can be the FOP of the previous GN, an overlap switching point, or the data center when \(i=1\). For a candidate \(\mathrm{FIP}_i\), the fly-in time is expressed as
+    \begin{equation}
+        t_{n_i}^{\mathrm{in}}=\frac{\left\|\mathrm{FIP}_i-\mathbf{P}_i^{\mathrm{pre}}\right\|}{v_{\max}}.
+    \end{equation}
+    After the data collection process of the \(i\)-th GN is completed, the outgoing flight direction is evaluated with respect to the next attractor \(\mathbf{a}_{i+1}\). The RPA-guided fly-out time is expressed as
+    \begin{equation}
+        t_{n_i}^{\mathrm{out}}=\frac{\left\|\mathbf{a}_{i+1}-\mathrm{FOP}_i\right\|}{v_{\max}}.
+    \end{equation}
+    Accordingly, the flight-time term considered in the RPA-guided trajectory planning process is written as
+    \begin{equation}
+        t_{n_i}^{\mathrm{RPA}}=t_{n_i}^{\mathrm{in}}+t_{n_i}^{\mathrm{out}}.
+    \end{equation}
+    The fly-out term \(t_{n_i}^{\mathrm{out}}\) shows how the next attractor affects the evaluation of the current FOP. When different FIP/FOP pairs are considered in the trajectory evaluation process, the selected FOP determines the flight time toward the next attractor. Therefore, the RPA mechanism affects the selection of the FIP/FOP pair through the RPA-guided flight-time term.
+
+    A candidate FIP/FOP pair is evaluated not only according to the data collection time of the current GN, but also according to the flight time toward the reference direction derived from the shortest geometric reference path. The UAV trajectory is not constrained to pass through the attractor. The complete candidate evaluation rule is described in Section~5.2.
+
+    Algorithm~\ref{alg:rpa} summarizes the procedure for constructing the shortest geometric reference path and extracting the corresponding reference-path attractors. Based on the extracted attractors and the RPA-guided flight-time term, Section~5.2 presents the single-node trajectory planning method, including the generation of candidate FIP/FOP pairs, the determination of OH, and the evaluation of \(t_{c_i}\). Section~5.3 further describes how the trajectory planning process is modified when consecutive GNs have overlapping communication regions.
+
+    \begin{algorithm}[H]
+    \caption{Reference Path Construction and Attractor Extraction}
+    \label{alg:rpa}
+    \KwIn{Communication regions \(\{\mathcal{D}_i\}_{i=1}^{N}\) in the visiting order; data center \(\mathbf{q}_0\)}
+    \KwOut{Shortest geometric reference path \(\mathcal{P}_{\mathrm{ref}}\); reference-path attractors \(\{\mathbf{a}_i\}_{i=1}^{N+1}\)}
+
+    Solve the SOCP problem in \eqref{eq:reference-path-construction} to obtain \(\{\mathbf{r}_i^{\mathrm{in}},\mathbf{r}_i^{\mathrm{out}}\}_{i=1}^{N}\)\;
+
+    Construct the shortest geometric reference path \(\mathcal{P}_{\mathrm{ref}}\):
+    \[
+    \mathcal{P}_{\mathrm{ref}}:
+    \mathbf{q}_0
+    \rightarrow
+    \mathbf{r}_1^{\mathrm{in}}
+    \rightarrow
+    \mathbf{r}_1^{\mathrm{out}}
+    \rightarrow
+    \cdots
+    \rightarrow
+    \mathbf{r}_N^{\mathrm{in}}
+    \rightarrow
+    \mathbf{r}_N^{\mathrm{out}}
+    \rightarrow
+    \mathbf{q}_0 .
+    \]
+
+    Define \(\ell(\mathbf{p})\) as the cumulative path length from \(\mathbf{q}_0\) to point \(\mathbf{p}\) along \(\mathcal{P}_{\mathrm{ref}}\)\;
+
+    \For{\(i=1\) \KwTo \(N\)}{
+        Extract the first reference-path point that lies within \(\mathcal{D}_i\):
+        \[
+        \mathbf{a}_i
+        =
+        \operatorname*{arg\,min}_{\mathbf{p}\in \mathcal{P}_{\mathrm{ref}}\cap \mathcal{D}_i}
+        \ell(\mathbf{p}).
+        \]
+    }
+
+    Set the terminal attractor as the data center:
+    \[
+    \mathbf{a}_{N+1}=\mathbf{q}_0 .
+    \]
+
+    \Return \(\mathcal{P}_{\mathrm{ref}}\) and \(\{\mathbf{a}_i\}_{i=1}^{N+1}\)\;
     \end{algorithm}
 
 
+\section{Single-Node Trajectory Planning}
 
-\subsection{Trusted Nodes for Real-Time Channel State Inquiry}
+    This section describes the trajectory planning process for an independent GN. An independent GN is defined as a GN whose communication region does not overlap with the communication regions of other GNs. Based on the RPA-guided flight-time term defined in Section~5.1, this planning process selects a suitable FIP/FOP pair while considering the data collection time inside the communication region. The corresponding OH is determined during the evaluation of the V-shaped data collection trajectory.
 
-    To enhance the timeliness and accuracy of channel state information, the proposed system introduces the concept of \textit{trusted nodes}. A trusted node refers to a counterparty that has exhibited a frequent transaction history with the sender. In practice, the trusted nodes may be individuals or merchants with whom the user has established trust, such as friends, family, or business partners.
+    \begin{figure*}[!t]
+		\centering
+		\includegraphics[width=0.7\textwidth]{./figures/single_node_data_collection.png}
+		\caption{V-shaped trajectory for single-node data collection.} 
+		\label{fig:single_node_data_collection}
+	\end{figure*}
+
+    As shown in Fig.~\ref{fig:single_node_data_collection}, the UAV collects data while moving inside the communication region of the GN. Candidate FIP and FOP points are generated on the communication boundary of the GN. Let \(\mathcal{F}_i^{\mathrm{in}}\) and \(\mathcal{F}_i^{\mathrm{out}}\) denote the candidate sets of FIP and FOP, respectively. For each candidate pair \((\mathrm{FIP}_i,\mathrm{FOP}_i)\), the corresponding \(\mathrm{OH}_i\) and the data collection time \(t_{c_i}\) are evaluated according to the required data amount \(C_i\).
+
+    For each candidate pair, the corresponding V-shaped trajectory is evaluated to determine whether the required data amount can be collected during flight. If the flying collection is sufficient, FM is adopted. If the flying collection is insufficient, HM is adopted, and the UAV collects the remaining data by hovering. After the data collection time is obtained for all candidate pairs, the candidate pair is selected by considering both \(t_{c_i}\) and the RPA-guided flight-time term \(t_{n_i}^{\mathrm{RPA}}\).
+
+    For a given FIP/FOP pair, the flying distance inside the communication region is determined by the sum of the distance from FIP to OH and the distance from OH to FOP. According to the geometric property of an ellipse, all points with the same sum of distances to \(\mathrm{FIP}_i\) and \(\mathrm{FOP}_i\) form an elliptical curve. Therefore, different V-shaped trajectories can be evaluated by adjusting \(\mathrm{OH}_i\) and the corresponding internal flying distance. When the required data amount can be collected during flight, a bisection search is used to determine a feasible V-shaped flying trajectory that satisfies the data collection requirement.
     
-    The system offers an API interface that enables the sender to query trusted nodes in real-time for up-to-date information regarding the residual capacity and usage frequency of specific payment channels. This mechanism complements the static topology disseminated through the gossip protocol. Routing decisions can be made by the more updated information.
-    
-    By leveraging trusted nodes, the sender can enhance the quality of path selection and traffic distribution. Payment success rates and overall routing efficiency can be improved.
+    The amount of data collected during flight is calculated by integrating the instantaneous transmission rate along the trajectory:
+    \begin{equation}
+        C_i^{\mathrm{FM}}=\int_{0}^{t_i^{\mathrm{FM}}} R_i(t)\,dt.
+    \end{equation}
+    where \(t_i^{\mathrm{FM}}\) denotes the flying collection time of the candidate V-shaped trajectory. If \(C_i^{\mathrm{FM}}\geq C_i\), the required data amount can be collected in FM, and the data collection time is given by \(t_{c_i}=t_i^{\mathrm{FM}}\). If \(C_i^{\mathrm{FM}}<C_i\), the flying trajectory cannot collect all required data. The UAV then operates in HM. In HM, OH is used as the hovering point, and the UAV collects the remaining data at this point. The additional hovering time is calculated as
+    \begin{equation}
+        t_i^{\mathrm{H}}=\frac{C_i-C_i^{\mathrm{FM}}}{R_i(\mathrm{OH}_i)}.
+    \end{equation}
+    Therefore, the data collection time in HM is
+    \begin{equation}
+        t_{c_i}=t_i^{\mathrm{FM}}+t_i^{\mathrm{H}}.
+    \end{equation}
+    After \(t_{c_i}\) is obtained for all candidate FIP/FOP pairs, each candidate is evaluated together with the RPA-guided flight-time term. The selected pair is determined by
+    \begin{equation}
+        \min_{\mathrm{FIP}_i,\mathrm{FOP}_i}
+        \ t_{c_i}\left(\mathrm{FIP}_i,\mathrm{OH}_i,\mathrm{FOP}_i\right)
+        + t_{n_i}^{\mathrm{RPA}} .
+    \end{equation}
 
-\subsection{Adaptive Multi-Path Payment Splitting Mechanism}
-    An adaptive multi-path splitting mechanism is designed to efficiently allocate payment amounts across multiple paths, as presented in Algorithm~\ref{alg:adaptive_split}. The algorithm dynamically assigns portions of the total payment to candidate paths based on their maximum transferable capacities. The algorithm also ensures that the minimum success rate among the selected paths does not fall below the system-defined threshold $\theta$.
-
-    \begin{algorithm}[t]
-        \caption{Adaptive Multi-Path Payment Splitting}
-        \label{alg:adaptive_split}
-        \DontPrintSemicolon % This is often useful to remove semicolons at the end of lines
-        
-        \KwIn{\;
-            Candidate paths $\mathcal{P} = \{p_1, p_2, \dots\}$ with capacities $Y(p)$; \\
-            Transaction amount $A$; \\
-            Minimum success rate threshold $\theta$; \\
-            Maximum path count $k$
-        }
-        \KwOut{\;
-            Split amounts $\{A_i \mid p_i \in \mathcal{S}\}$
-        }
-        
-        \SetKwInOut{Define}{Definition} % Define the 'Definition' block
-        \Define{\;
-            $\theta$: Minimum success rate threshold for path selection\;
-            $\mathcal{S}$: Subset of selected paths from $\mathcal{P}$\;
-            $T$: Total capacity of the currently selected paths in $\mathcal{S}$\;
-            $\rho$: Minimum remaining capacity ratio among selected paths\;
-        }
-        
-        Initialize $\mathcal{S} \gets \{p_1\}$\;
-        
-        \While{True}{
-            $T \gets \sum\limits_{p_i \in \mathcal{S}} Y(p_i)$\;
-            \If{$T = 0$}{
-                \textbf{raise} error: insufficient capacity\;
-            }
-        
-            \ForEach{$p_i \in \mathcal{S}$}{
-                $A_i \gets A \cdot \frac{Y(p_i)}{T}$\;
-            }
-        
-            $\rho \gets \min\limits_{p_i \in \mathcal{S}} \left( \frac{Y(p_i) - A_i}{Y(p_i)} \right)$\;
-        
-            \If{$\rho \geq \theta$ \textbf{or} $|\mathcal{S}| = |\mathcal{P}|$ \textbf{or} $|\mathcal{S}| = k$}{
-                \textbf{break}\;
-            }
-        
-            Add next path $p_j$ to $\mathcal{S}$\;
-        }
-        
-        \Return{$\{A_i \mid p_i \in \mathcal{S}\}$}
-    \end{algorithm}
-
-\subsection{Path Probing and Payment Execution Procedure}
-
-    Algorithm~\ref{alg:probe_and_pay} outlines the procedure for executing payment transfers and initiating path probing. The system first attempts to transmit the segmented payment amounts through the initially selected paths.
-    
-    Subsequently, the system evaluates the remaining unutilized candidate paths, ranks them based on their total forwarding fees that comprise both fixed and proportional components. The top-$k$ paths with the lowest forwarding fees are selected and issued as probing tasks to collect up-to-date information on channel availability.
-    
-    Finally, if the payment is successfully completed via the initially selected paths, the task will be designated as successful and the total incurred fees will be calculated. Conversely, if the available capacity is insufficient, the task will be designated as failed and the subsequent retry mechanism for failed payments will be proceeded.
+    In (5.12), \(\mathrm{OH}_i\) is determined during the evaluation of \(t_{c_i}\). Therefore, the selected pair is determined by considering both the data collection time inside the communication region and the RPA-guided flight time. After the trajectory of the current GN is determined, the resulting FOP is used as the starting point for planning the next GN. When consecutive GNs have overlapping communication regions, the corresponding overlapping-node trajectory planning method is described in Section~5.3.
 
 
-    \begin{algorithm}[t]
-        \caption{Path Probing and Payment Execution}
-        \label{alg:probe_and_pay}
-        \DontPrintSemicolon % This is often useful to remove semicolons at the end of lines
-        
-        \KwIn{\;
-            Candidate paths $\{(p, Y(p), \alpha(p), \beta(p))\}$ sorted by preference; \\
-            Assigned split amounts $\{A_i\}$ for selected paths
-        }
-        \KwOut{\;
-            Payment status (success/failure), total fee
-        }
-        
-        \SetKwInOut{Define}{Definition} % Define the 'Definition' block
-        \Define{\;
-            $\alpha(p)$: Base fee for path $p$ (sum of base fees of channels in $p$)\;
-            $\beta(p)$: Fee rate for path $p$ (sum of fee rates of channels in $p$)\;
-            $\mathcal{C}$: Set of remaining unselected candidate paths\;
-            $\tau$: Timeout parameter for probing task\;
-            $\text{ProbeTask}(p, \tau)$: A task to probe path $p$ with timeout $\tau$\;
-        }
-        
-        \tcp{Step 1: Execute payment on selected paths}
-        \ForEach{$(p_i, A_i)$ in selected paths}{
-            Attempt to transfer $A_i$ through $p_i$\;
-        }
-        
-        \BlankLine
-        \tcp{Step 2: Probe additional candidate paths by fee}
-        Let $\mathcal{C} \gets$ remaining unselected candidate paths\;
-        Sort $\mathcal{C}$ by total forwarding cost: \\
-        \Indp \tcp*[f]{$\text{TotalFee}(p) = \sum\limits_{(v_i, v_j) \in p} \alpha_{[v_i, v_j]} + \beta_{[v_i, v_j]} \cdot A$}
-        \Indm
-        
-        Let $\mathcal{C}_{top} \gets$ top $k$ paths with lowest total fee in $\mathcal{C}$\;
-        
-        \ForEach{$p \in \mathcal{C}_{top}$}{
-            Create and enqueue probing task $\text{ProbeTask}(p, \tau)$\;
-        }
-        
-        \BlankLine
-        \tcp{Step 3: Finalize payment result}
-        \If{channel capacity is sufficient}{
-            Mark task as successful; compute total fee\;
-        }
-        \Else{
-            Mark task as failed due to insufficient capacity\;
-        }
-        \Return{Payment status and total fee}
-    \end{algorithm}
-        \begin{algorithm}[t]
-        \caption{Fallback Routing Using Probed Paths}
-        \label{alg:fallback}
-        \DontPrintSemicolon 
-        
-        \KwIn{\;
-            Remaining amount $A_{rem}$; \\
-            Probing results $\mathcal{R} = \{(p_i, Y(p_i))\}$; \\
-            Splitting threshold $\gamma$; \\
-            Network graph $G$ and current payment task
-        }
-        \KwOut{\;
-            Updated payment task (success/failure), total fee
-        }
-        
-        \SetKwInOut{Define}{Definition} % Define the 'Definition' block
-        \Define{\;
-            Current payment task: The overall payment operation being processed\;
-            $\mathcal{F}$: List of fallback paths chosen for payment, each with an assigned amount $(p, A_s)$\;
-            $A_c$: Current remaining capacity/amount to fulfill from $A_{rem}$\;
-            $A_s$: Amount to be sent through a specific fallback path $p$\;
-            $\text{success}$: Boolean variable indicating the overall success of fallback routing\;
-            $fee_{total}$: Accumulative total fee incurred for successful transfers\;
-        }
-        
-        Initialize $\mathcal{F} \gets [~]$ \;
-        $A_c \gets A_{rem}$ \tcp*{Remaining amount to fulfill}
-        
-        \ForEach{$(p, Y(p)) \in \mathcal{R}$}{
-            \If{$A_c \leq 0$}{\textbf{break} \tcp*{Target amount fulfilled}}
-        
-            $A_s \gets \min\left(A_c,\; Y(p) \cdot (1 - \gamma)\right)$ \tcp*{Apply success margin}
-        
-            \If{$A_s > 0$}{
-                Append $(p, A_s)$ to $\mathcal{F}$\;
-                $A_c \gets A_c - A_s$\;
-            }
-        }
-        
-        \If{$\mathcal{F}$ is empty}{
-            Mark payment task as \textbf{failed}; no feasible fallback paths\;
-        }
-        \Else{
-            $\text{success} \gets \text{True}$,\quad $fee_{total} \gets 0$\;
-            
-            \ForEach{$(p, A_s) \in \mathcal{F}$}{
-                \If{transfer of $A_s$ through $p$ is successful}{
-                    Update network state;\quad $fee_{total} \mathrel{+}= \text{TotalFee}(p)$\;
-                }
-                \Else{
-                    $\text{success} \gets \text{False}$; \quad \textbf{break} \tcp*{Transfer failed, stop further attempts}
-                }
-            }
-            
-            \If{$\text{success}$ \textbf{and} $A_c \leq 0$}{
-                Mark payment task as \textbf{successful}; return $fee \gets fee_{total}$\;
-            }
-            \ElseIf{$\text{success}$ \textbf{and} $A_c > 0$}{ % Explicitly state A_c > 0 for partial success
-                Mark payment as \textbf{partially successful}; update $A_{rem} \gets A_c$\;
-            }
-            \Else{ % success is False
-                Mark payment task as \textbf{failed}; preserve $A_{rem}$\;
-            }
-        }
-    \end{algorithm}
+\section{Overlapping-Node Group Trajectory Planning}
+    This section describes the trajectory planning method for GNs with overlapping communication regions. For an independent GN, the FIP and FOP candidates are generated on the communication boundary of a single GN, as described in Section~5.2. When the communication regions of adjacent GNs overlap, the overlapping region provides additional flexibility for service transition. If the UAV is still forced to leave one communication region from its boundary and enter the next communication region from another boundary point, unnecessary flight distance may be introduced. 
 
+    To use the overlapping region between adjacent GNs, this thesis proposes the Boundary-Overlap Strategy (BO). BO allows the switching point \(P^{\mathrm{sw}}_{i,i+1}\), defined in the system model, to be selected from the overlapping region of \(g_i\) and \(g_{i+1}\). In this way, the UAV can connect the service trajectory of two adjacent GNs through the overlapping region, instead of performing an additional boundary-to-boundary transition.
 
-\section{Phase II: Failed Handling}
-    
-    Algorithm~\ref{alg:fallback} introduces the fallback mechanism that is invoked after the failure of the initial routing attempt. The system utilizes previously collected probing results to identify alternative paths with sufficient capacity. For each probed path, a threshold is applied to the probed capacity to reduce the likelihood of failure during reattempts. Based on this threshold-adjusted capacity, the system allocates the remaining unpaid amount across eligible fallback paths.
-    
-    Each selected fallback path subsequently executes the payment. If the entire remaining amount is successfully transferred via these paths, the payment task will be designated as success. If only a portion of the amount is transferred, the entire transaction will be defined as failure.
-	
+    \begin{figure*}[!t]
+		\centering
+		\includegraphics[width=0.9\textwidth]{./figures/overlap_trajectory.png}
+		\caption{Boundary-Overlap Strategy for overlapping GNs.} 
+		\label{fig:overlap_trajectory}
+	\end{figure*}
+
+    As shown in Fig.~\ref{fig:overlap_trajectory}, multiple adjacent GNs with overlapping communication regions are considered as one group. Let
+    \begin{equation}
+        G_m=\{g_i,g_{i+1},\ldots,g_j\}
+    \end{equation}
+    denote the \(m\)-th overlapping-node group, where \(g_i\) and \(g_j\) are the first and last GNs in the group, respectively. Here, \(G_m\) denotes a set of GNs, while \(g_i\) denotes an individual GN. For any two adjacent GNs \(g_k\) and \(g_{k+1}\) in \(G_m\), where \(k=i,\ldots,j-1\), their communication regions overlap. The UAV enters the group from the FIP of \(g_i\), passes through the switching points in the overlapping regions and leaves the group from the FOP of \(g_j\). For example, if the group contains \(g_i\), \(g_{i+1}\), and \(g_{i+2}\), the service trajectory inside the group can be represented as
+    \begin{equation}
+        \mathrm{FIP}_i
+        \rightarrow
+        \mathrm{OH}_i
+        \rightarrow
+        P^{\mathrm{sw}}_{i,i+1}
+        \rightarrow
+        \mathrm{OH}_{i+1}
+        \rightarrow
+        P^{\mathrm{sw}}_{i+1,i+2}
+        \rightarrow
+        \mathrm{OH}_{i+2}
+        \rightarrow
+        \mathrm{FOP}_{i+2}.
+    \end{equation}
+    In this sequence, \(\mathbf{P}^{\mathrm{sw}}_{i,i+1}\) is used as the exit point of \(g_i\) and the entry point of \(g_{i+1}\). Similarly, \(\mathbf{P}^{\mathrm{sw}}_{i+1,i+2}\) connects the service trajectories of \(g_{i+1}\) and \(g_{i+2}\). Therefore, the group is planned as a single service unit with one entry point and one exit point.
+
+    For each overlapping region, BO selects the switching point from a finite candidate set instead of searching over the entire continuous overlapping region. The candidate set is generated using two representative sampling directions. The first direction follows the line segment connecting the centers of the two adjacent GNs. Since different adjacent GN pairs may have different overlap depths. Therefore BO can adjust whether the service transition should occur earlier or later within the overlapping region. The second direction follows a perpendicular sampling line inside the overlapping region. This direction provides candidates with different inward depths within the overlapping region. Since different data amounts may require different collection depths, the perpendicular sampling line allows BO to adjust the switching location according to the data collection requirement. By combining these two representative directions, the T-shaped sampling method generates switching candidates for the overlapping region without searching all possible points in the continuous region.
+
 %------------------------- Performance Evaluation-------------------------%
 \chapter{Performance Evaluation}\label{Chap:Implementation}
 
