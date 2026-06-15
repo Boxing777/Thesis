@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.19)  15 JUN 2026 22:00
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.5.19)  15 JUN 2026 23:15
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -407,12 +407,12 @@ File: ./figures/reference_path_attractors.png Graphic file (type bmp)
 <./figures/reference_path_attractors.png>
  [20] [21]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <9> on input line 350.
+(Font)              <9> on input line 349.
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <5> on input line 350.
+(Font)              <5> on input line 349.
 
 
-LaTeX Warning: Reference `eq:reference-path-construction' on page 22 undefined on input line 353.
+LaTeX Warning: Reference `eq:reference-path-construction' on page 22 undefined on input line 352.
 
 [22]
 File: ./figures/single_node_data_collection.png Graphic file (type bmp)
@@ -426,8 +426,8 @@ Chapter 5.
 
 ] [31]
 LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <7> on input line 544.
-Invalid UTF-8 byte or sequence at line 567 replaced by U+FFFD.
+(Font)              <7> on input line 543.
+Invalid UTF-8 byte or sequence at line 566 replaced by U+FFFD.
 
 Missing character: There is no � (U+FFFD) in font [lmroman12-regular]:mapping=tex-text;!
 File: ./figures/run_167_initial_routes.png Graphic file (type bmp)
@@ -468,4 +468,4 @@ Here is how much of TeX's memory you used:
  1348 hyphenation exceptions out of 8191
  67i,15n,77p,1890b,659s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on out/Thesis_Boxing.xdv (48 pages, 669768 bytes).
+Output written on out/Thesis_Boxing.xdv (48 pages, 671256 bytes).
