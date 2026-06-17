@@ -182,17 +182,15 @@ National Cheng Kung University \\
     where \(\sigma^2\) denotes the noise power at the UAV receiver, and \(L_{dB_i}(t)\) represents the air-to-ground path loss between GN \(g_i\) and the UAV at time \(t\). The UAV can successfully collect data only when the received SNR satisfies \(\gamma_i(t)\geq\bar{\gamma}\). To avoid transmission interference among GNs, only the ground node being served is allowed to transmit data to the UAV during the corresponding service interval.
 
 
-    \noindent\textit{2) Channel Model:} Considering that the mission completion time generally exceeds the channel coherence time and that the UAV position changes during the mission, a statistical channel model is adopted. The path loss from GN \(g_i\) to UAV can be expressed as
+    \noindent\textit{2) Channel Model:} The UAV position changes during the mission, and the mission completion time is generally longer than the channel coherence time. Therefore, this thesis adopts a statistical channel model. The path loss from GN (g_i) to the UAV is expressed as
     \begin{equation}
         L_{dB_i}(t)=\left(\frac{4\pi f_c}{c}\right)^2 l_i^{\eta}\left[P_{\mathrm{LoS}_i}(t)\left(\xi_{\mathrm{LoS}}-\xi_{\mathrm{NLoS}}\right)+\xi_{\mathrm{NLoS}}\right]
     \end{equation}
-    where \(f_c\) denotes the carrier frequency, \(c\) denotes the speed of light, and \(\eta\) denotes the path-loss exponent. The parameters \(\xi_{\mathrm{LoS}}\) and \(\xi_{\mathrm{NLoS}}\) represent the average additional path losses under LoS and NLoS propagation conditions, respectively. In addition, \(l_i(t)\) denotes the three-dimensional distance between GN \(g_i\) and the UAV, which is given by
+    where \(f_c\) denotes the carrier frequency, \(c\) denotes the speed of light, and \(\eta\) denotes the path-loss exponent. The parameters \(\xi_{\mathrm{LoS}}\) and \(\xi_{\mathrm{NLoS}}\) represent the average additional path losses under LoS and NLoS propagation conditions, respectively. The three-dimensional distance between GN (g_i) and the UAV is denoted by (l_i(t)) and is given by
     \begin{equation}
-        l_i(t)=\sqrt{\left(U_x(t)-GN_{ix}\right)^2+\left(U_y(t)-GN_{iy}\right)^2+H^2}
+        l_i(t)=\sqrt{\left(U_x(t)-GN_{xi}\right)^2+\left(U_y(t)-GN_{yi}\right)^2+H^2}
     \end{equation}
-    where \(\left(GN_{ix},GN_{iy}\right)\) is the horizontal coordinate of GN \(g_i\), \(\left(U_x(t),U_y(t)\right)\) is the horizontal coordinate of the UAV at time \(t\), and \(H\) is the fixed flying altitude of the UAV.
-    
-    The LoS probability between GN \(g_i\) and the UAV is modeled as
+    where \(\left(GN_{xi},GN_{yi}\right)\) is the horizontal coordinate of GN \(g_i\), \(\left(U_x(t),U_y(t)\right)\) is the horizontal coordinate of the UAV at time \(t\), and \(H\) is the fixed flying altitude of the UAV. The LoS probability between GN \(g_i\) and the UAV is modeled as
     \begin{equation}
         P_{\mathrm{LoS}_i}(t)=\frac{1}{1+\alpha \exp\left[-\beta\left(\theta_i(t)-\alpha\right)\right]}
     \end{equation}
@@ -201,10 +199,10 @@ National Cheng Kung University \\
         \theta_i(t)=\frac{180}{\pi}\arcsin\left(\frac{H}{l_i(t)}\right).
     \end{equation}
 
-    According to this channel model, the path loss is affected by both the UAV--GN distance and the elevation angle. When the UAV moves closer to a GN, the three-dimensional distance decreases and the elevation angle increases, which generally improves the LoS probability and reduces the average path loss. Therefore, the UAV trajectory directly affects the received SNR and the corresponding data collection time.
+    Under this channel model, the path loss is affected by both the UAV--GN distance and the elevation angle. When the UAV moves closer to a GN, the three-dimensional distance decreases and the elevation angle increases, which generally improves the LoS probability and reduces the average path loss. Therefore, the UAV trajectory directly affects the received SNR and the corresponding data collection time.
 
 \section{Problem Formulation}
-    In the considered single-UAV data collection mission, all GNs must be served within one flight. The UAV starts from the data center, collects the required data from each GN, and returns to the data center. For a given transmit power \(P_t\), the communication radius of each GN is determined by the SNR threshold \(\bar{\gamma}\). Let \(D\) denote the maximum horizontal distance between the UAV and a GN such that the received SNR is equal to \(\bar{\gamma}\). When the UAV is located inside the communication region with radius \(D\), the received SNR is no less than the required threshold, and the UAV can successfully receive data from the corresponding GN. The value of \(D\) is obtained according to the adopted LoS-based air-to-ground channel model.
+    In the considered single-UAV data collection mission, all GNs must be served in one mission. The UAV starts from the data center, collects the required data from each GN, and returns to the data center. For a given transmit power \(P_t\), the communication radius of each GN is determined by the SNR threshold \(\bar{\gamma}\). Let \(D\) denote the maximum horizontal distance between the UAV and a GN such that the received SNR is equal to \(\bar{\gamma}\). When the UAV is located inside the communication region with radius \(D\), the received SNR is no less than the required threshold, and the UAV can successfully receive data from the corresponding GN. The value of \(D\) is obtained according to the adopted LoS-based air-to-ground channel model.
 	
     \begin{figure*}[!t]
 		\centering
@@ -262,21 +260,27 @@ National Cheng Kung University \\
     \end{equation}
 
     Let \(\mathcal{P}\) denote the set of service points associated with the UAV trajectory, including the FIPs, OHs, FOPs, and the overlap switching points when communication regions overlap. Based on the above definitions, the overall MCT reduction problem is formulated as
-    \begin{equation}
-    \begin{aligned}
+    \begin{subequations}
+    \label{eq:p1}
+    \begin{align}
     \textbf{(P1):}\quad 
     &\min_{U(t),\mathcal{P}}
     \left[
     \sum_{i=1}^{N}\left(t_{c_i}+t_{n_i}\right)+t^r
-    \right] \\
+    \right] \notag \\
     \text{s.t.}\quad 
-    &\gamma_i(t)\geq \bar{\gamma} \\
-    &\mathrm{FIP}_i,\mathrm{OH}_i,\mathrm{FOP}_i \in D_i \\
-    &P^{\mathrm{sw}}_{i,i+1} \in D_i \cap D_{i+1},\ i\in \mathcal{O} \\
-    &\int_{0}^{t_{c_i}} R_i(t)\,dt \geq Q_i
-    \end{aligned}
-    \end{equation}
-    Here, \(\mathcal{O}\) denotes the set of consecutive GN indices whose communication regions overlap, i.e., \(D_i \cap D_{i+1} \neq \emptyset\). Constraint (17a) ensures that the received SNR satisfies the required threshold during data collection. Constraint (17b) requires the key service points of each GN to lie within the corresponding communication region. Constraint (17c) defines the feasible region of the overlap switching point. Constraint (17d) guarantees that the required data amount of each GN is collected.
+    &\gamma_i(t)\geq \bar{\gamma}, 
+    \label{eq:p1_snr}\\
+    &\mathrm{FIP}_i,\mathrm{OH}_i,\mathrm{FOP}_i \in D_i,
+    \label{eq:p1_points}\\
+    &P^{\mathrm{sw}}_{i,i+1} \in D_i \cap D_{i+1},\ i\in \mathcal{O},
+    \label{eq:p1_overlap}\\
+    &\int_{0}^{t_{c_i}} R_i(t)\,dt \geq Q_i.
+    \label{eq:p1_data}
+    \end{align}
+    \end{subequations}
+
+    Here, \(\mathcal{O}\) denotes the set of consecutive GN indices whose communication regions overlap, i.e., \(D_i \cap D_{i+1} \neq \emptyset\). Constraint~\eqref{eq:p1_snr} ensures that the received SNR satisfies the required threshold during data collection. Constraint~\eqref{eq:p1_points} requires the key service points of each GN to lie within the corresponding communication region. Constraint~\eqref{eq:p1_overlap} defines the feasible region of the overlap switching point. Constraint~\eqref{eq:p1_data} guarantees that the required data amount of each GN is collected.
 
     Problem \textbf{P1} is difficult to solve directly because the flight trajectory and the data collection trajectory are coupled. The selection of service points in \(\mathcal{P}\) affects both the flight time \(t_{n_i}\) and the data collection time \(t_{c_i}\). Moreover, when consecutive communication regions overlap, the overlap switching points affect the continuity of the service trajectory across adjacent GNs. Therefore, this thesis addresses \textbf{P1} through two trajectory planning components in the proposed solution: single-node trajectory planning and overlapping-node group trajectory planning. The RPA mechanism provides reference-path attractors for both components, whereas the BO strategy is specifically applied to overlapping-node groups to determine feasible service switching points within overlapping communication regions.
 
@@ -289,14 +293,15 @@ National Cheng Kung University \\
 
     Based on the spatial relationship among GNs, the proposed trajectory planning process is divided into two cases. For an independent GN whose communication region does not overlap with the communication regions of other GNs, this thesis applies single-node trajectory planning to determine the corresponding service trajectory. For consecutive GNs with overlapping communication regions, this thesis adopts the Boundary-Overlap Strategy (BO), which treats the overlapping GNs as a group and uses the flexibility provided by the overlapping regions to determine the service trajectory.
 
-    The remainder of this chapter is organized as follows. Section~5.1 introduces the construction of the shortest geometric reference path and the Reference-Path Attractor (RPA) mechanism. Section~5.2 presents the single-node trajectory planning method. Section~5.3 describes the overlapping-node group trajectory planning method based on BO.
+    The remainder of this chapter is organized as follows. Section~\ref{sec:4.1} introduces the construction of the shortest geometric reference path and the Reference-Path Attractor (RPA) mechanism. Section~\ref{sec:4.2} presents the single-node trajectory planning method. Section~\ref{sec:4.3} describes the overlapping-node group trajectory planning method based on BO.
     
-\section{Reference Path Construction and RPA Mechanism}
+\section{Reference Path Construction and RPA Mechanism}\label{sec:4.1}
+
 
     The purpose of constructing a shortest geometric reference path is to provide a global geometric direction for the subsequent trajectory planning process. If the trajectory segment associated with each GN is determined only according to the data collection time of the current GN, the selection of FIP and FOP may lack guidance from the shortest geometric reference path. As a result, the subsequent trajectory may deviate from the shortest geometric reference path, leading to an increase in flight distance. Therefore, this thesis first computes a shortest geometric reference path that passes through all GN communication regions and then extracts reference-path attractors from this path. In this thesis, an attractor is defined as a reference point extracted from the shortest geometric reference path within the communication region of a GN. The attractor is used as a directional reference when evaluating candidate FIP/FOP pairs in later trajectory planning, but the UAV is not required to pass through the attractor.
 
     Following the service order defined in the problem formulation, the index \(i\) denotes the \(i\)-th GN visited by the UAV, and the communication region of this GN is denoted by \(\mathcal{D}_i\), as defined in the system model. For the given visiting sequence, this thesis computes a shortest geometric path that passes through all communication regions \(\mathcal{D}_i\). To formulate the reference path construction problem, two auxiliary reference-path points are introduced for each communication region. Let \(\mathbf{r}_i^{\mathrm{in}}\) and \(\mathbf{r}_i^{\mathrm{out}}\) denote the reference-path entry point and reference-path exit point associated with \(\mathcal{D}_i\), respectively. These two points are used only for constructing the shortest geometric reference path and are not the final FIP and FOP used for data collection. The shortest geometric reference path is obtained by solving
-    \begin{equation}
+    \begin{equation}\label{eq:reference-path-construction}
     \begin{aligned}
     \min_{\{\mathbf{r}_i^{\mathrm{in}},\mathbf{r}_i^{\mathrm{out}}\}_{i=1}^{N}} \quad
     & \left\|\mathbf{r}_1^{\mathrm{in}}-\mathbf{q}_0\right\|
@@ -308,7 +313,7 @@ National Cheng Kung University \\
     & \mathbf{r}_i^{\mathrm{out}} \in \mathcal{D}_i .
     \end{aligned}
     \end{equation}
-    where \(\mathbf{q}_0\) denotes the data center. The first term represents the distance from the data center to the reference-path entry point of the first visited GN. The second term represents the geometric segment inside each communication region. The third term represents the distance from the reference-path exit point of the current GN to the reference-path entry point of the next visited GN. The last term represents the return distance from the last communication region to the data center. Since the objective function is composed of Euclidean norm terms and the feasible communication regions are convex, (5.1) can be formulated as a SOCP problem.
+    where \(\mathbf{q}_0\) denotes the data center. The first term represents the distance from the data center to the reference-path entry point of the first visited GN. The second term represents the geometric segment inside each communication region. The third term represents the distance from the reference-path exit point of the current GN to the reference-path entry point of the next visited GN. The last term represents the return distance from the last communication region to the data center. Since the objective function is composed of Euclidean norm terms and the feasible communication regions are convex, \eqref{eq:reference-path-construction} can be formulated as a SOCP problem.
 
     The segment from \(\mathbf{r}_i^{\mathrm{in}}\) to \(\mathbf{r}_i^{\mathrm{out}}\) represents only the portion of the shortest geometric reference path inside the communication region \(\mathcal{D}_i\), rather than the actual data collection trajectory of the \(i\)-th GN. The final FIP, OH, and FOP are determined later according to the data requirement of the GN and the corresponding data collection time. Therefore, the shortest geometric reference path provides geometric reference information for the subsequent trajectory planning process.
 
@@ -341,9 +346,9 @@ National Cheng Kung University \\
     \end{equation}
     The fly-out term \(t_{n_i}^{\mathrm{out}}\) shows how the next attractor affects the evaluation of the current FOP. When different FIP/FOP pairs are considered in the trajectory evaluation process, the selected FOP determines the flight time toward the next attractor. Therefore, the RPA mechanism affects the selection of the FIP/FOP pair through the RPA-guided flight-time term.
 
-    A candidate FIP/FOP pair is evaluated not only according to the data collection time of the current GN, but also according to the flight time toward the reference direction derived from the shortest geometric reference path. The UAV trajectory is not constrained to pass through the attractor. The complete candidate evaluation rule is described in Section~5.2.
+    A candidate FIP/FOP pair is evaluated not only according to the data collection time of the current GN, but also according to the flight time toward the reference direction derived from the shortest geometric reference path. The UAV trajectory is not constrained to pass through the attractor. The complete candidate evaluation rule is described in Section~\ref{sec:4.2}.
 
-    Algorithm~\ref{alg:rpa} summarizes the procedure for constructing the shortest geometric reference path and extracting the corresponding reference-path attractors. Based on the extracted attractors and the RPA-guided flight-time term, Section~5.2 presents the single-node trajectory planning method, including the generation of candidate FIP/FOP pairs, the determination of OH, and the evaluation of \(t_{c_i}\). Section~5.3 further describes how the trajectory planning process is modified when consecutive GNs have overlapping communication regions.
+    Algorithm~\ref{alg:rpa} summarizes the procedure for constructing the shortest geometric reference path and extracting the corresponding reference-path attractors. Based on the extracted attractors and the RPA-guided flight-time term, Section~\ref{sec:4.2} presents the single-node trajectory planning method, including the generation of candidate FIP/FOP pairs, the determination of OH, and the evaluation of \(t_{c_i}\). Section~\ref{sec:4.3} further describes how the trajectory planning process is modified when consecutive GNs have overlapping communication regions.
 
     \begin{algorithm}[H]
     \small
@@ -370,9 +375,9 @@ National Cheng Kung University \\
     \end{algorithm}
 
 
-\section{Single-Node Trajectory Planning}
+\section{Single-Node Trajectory Planning}\label{sec:4.2}
 
-    This section describes the trajectory planning process for an independent GN. An independent GN is defined as a GN whose communication region does not overlap with the communication regions of other GNs. Based on the RPA-guided flight-time term defined in Section~5.1, this planning process selects a suitable FIP/FOP pair while considering the data collection time inside the communication region. The corresponding OH is determined during the evaluation of the V-shaped data collection trajectory.
+    This section describes the trajectory planning process for an independent GN. An independent GN is defined as a GN whose communication region does not overlap with the communication regions of other GNs. Based on the RPA-guided flight-time term defined in Section~\ref{sec:4.1}, this planning process selects a suitable FIP/FOP pair while considering the data collection time inside the communication region. The corresponding OH is determined during the evaluation of the V-shaped data collection trajectory.
 
     \begin{figure*}[!t]
 		\centering
@@ -400,17 +405,18 @@ National Cheng Kung University \\
         t_{c_i}=t_i^{\mathrm{FM}}+t_i^{\mathrm{H}}.
     \end{equation}
     After \(t_{c_i}\) is obtained for all candidate FIP/FOP pairs, each candidate is evaluated together with the RPA-guided flight-time term. The selected pair is determined by
-    \begin{equation}
+    \begin{equation}\label{eq:min-fip-fop}
         \min_{\mathrm{FIP}_i,\mathrm{FOP}_i}
         \ t_{c_i}\left(\mathrm{FIP}_i,\mathrm{OH}_i,\mathrm{FOP}_i\right)
         + t_{n_i}^{\mathrm{RPA}} .
     \end{equation}
 
-    In (5.12), \(\mathrm{OH}_i\) is determined during the evaluation of \(t_{c_i}\). Therefore, the selected pair is determined by considering both the data collection time inside the communication region and the RPA-guided flight time. After the trajectory of the current GN is determined, the resulting FOP is used as the starting point for planning the next GN. When consecutive GNs have overlapping communication regions, the corresponding overlapping-node trajectory planning method is described in Section~5.3.
+    In \eqref{eq:min-fip-fop}, \(\mathrm{OH}_i\) is determined during the evaluation of \(t_{c_i}\). Therefore, the selected pair is determined by considering both the data collection time inside the communication region and the RPA-guided flight time. After the trajectory of the current GN is determined, the resulting FOP is used as the starting point for planning the next GN. When consecutive GNs have overlapping communication regions, the corresponding overlapping-node trajectory planning method is described in Section~\ref{sec:4.3}.
 
 
-\section{Overlapping-Node Group Trajectory Planning}
-    This section describes the trajectory planning method for GNs with overlapping communication regions. For an independent GN, the FIP and FOP candidates are generated on the communication boundary of a single GN, as described in Section~5.2. When the communication regions of adjacent GNs overlap, the overlapping region provides additional flexibility for service transition. If the UAV is still forced to leave one communication region from its boundary and enter the next communication region from another boundary point, unnecessary flight distance may be introduced. 
+\section{Overlapping-Node Group Trajectory Planning}\label{sec:4.3}
+
+    This section describes the trajectory planning method for GNs with overlapping communication regions. For an independent GN, the FIP and FOP candidates are generated on the communication boundary of a single GN, as described in Section~\ref{sec:4.2}. When the communication regions of adjacent GNs overlap, the overlapping region provides additional flexibility for service transition. If the UAV is still forced to leave one communication region from its boundary and enter the next communication region from another boundary point, unnecessary flight distance may be introduced. 
 
     To use the overlapping region between adjacent GNs, this thesis proposes the Boundary-Overlap Strategy (BO). BO allows the switching point \(P^{\mathrm{sw}}_{i,i+1}\), defined in the system model, to be selected from the overlapping region of \(g_i\) and \(g_{i+1}\). In this way, the UAV can connect the service trajectory of two adjacent GNs through the overlapping region, instead of performing an additional boundary-to-boundary transition.
 
@@ -457,12 +463,12 @@ National Cheng Kung University \\
         \right].
     \end{equation}
 
-    The first point in \(\mathcal{S}_m\) is the group entry point, and the last point is the group exit point. The intermediate points are switching points selected from the overlapping regions Given a candidate sequence, each GN uses the previous point in the sequence as its entry point and the next point as its exit point. After a candidate sequence \(\mathcal{S}_m\) is determined, the data collection time of each GN in the group is evaluated according to the V-shaped trajectory model described in Section~5.2. The collection-time term of the group is defined as the sum of the data collection times of all GNs in the group:
+    The first point in \(\mathcal{S}_m\) is the group entry point, and the last point is the group exit point. The intermediate points are switching points selected from the overlapping regions Given a candidate sequence, each GN uses the previous point in the sequence as its entry point and the next point as its exit point. After a candidate sequence \(\mathcal{S}_m\) is determined, the data collection time of each GN in the group is evaluated according to the V-shaped trajectory model described in Section~\ref{sec:4.2}. The collection-time term of the group is defined as the sum of the data collection times of all GNs in the group:
     \begin{equation}
         t_{c,m}=\sum_{k=i}^{j}t_{c_k}
     \end{equation}
     In addition to the collection-time term, the flight time before entering and after leaving the group must also be considered. Since the overlapping-node group is served as one continuous trajectory segment, the group has one entry point and one exit point. The flight-time term of the group is expressed as
-    \begin{equation}
+    \begin{equation}\label{eq:time-tn_m}
         t_{n,m}
         =
         \frac{\left\|\mathrm{FIP}_i-\mathrm{FOP}_{i-1}\right\|}{v_{\max}}
@@ -471,15 +477,15 @@ National Cheng Kung University \\
     \end{equation}
 
     Therefore, each candidate sequence is evaluated by
-    \begin{equation}
+    \begin{equation}\label{eq:time-T_m}
         T_m=t_{c,m}+t_{n,m}.
     \end{equation}
 
-    In (5.18), \(T_m\) denotes the evaluation time of a candidate sequence for the \(m\)-th overlapping-node group. The term \(t_{c,m}\) represents the total data collection time of the GNs in the group, while \(t_{n,m}\) represents the flight time associated with entering and leaving the group. The candidate sequence with the smallest \(T_m\) is selected as the service trajectory of the group. In (5.17), the first term represents the flight time from the FOP of the previous GN to the entry point of the group, and the second term represents the flight time from the exit point of the group toward the next attractor.
+    In \eqref{eq:time-T_m}, \(T_m\) denotes the evaluation time of a candidate sequence for the \(m\)-th overlapping-node group. The term \(t_{c,m}\) represents the total data collection time of the GNs in the group, while \(t_{n,m}\) represents the flight time associated with entering and leaving the group. The candidate sequence with the smallest \(T_m\) is selected as the service trajectory of the group. In \eqref{eq:time-tn_m}, the first term represents the flight time from the FOP of the previous GN to the entry point of the group, and the second term represents the flight time from the exit point of the group toward the next attractor.
 
     Since a group may contain more than two GNs, directly enumerating all possible combinations of entry points, switching points, and exit points may increase the search cost. BO therefore organizes the candidate points into layers. The first layer contains candidate FIP points of the first GN in the group, the intermediate layers contain candidate switching points generated in the overlapping regions, and the last layer contains candidate FOP points of the last GN. A dynamic programming search is then applied over these layers to find the candidate sequence with the smallest accumulated evaluation time.
 
-    After the trajectory of the group is determined, the selected \(\mathrm{FOP}_j\) is used as the previous service point for the next planning step. When the next GN is independent, the single-node trajectory planning method in Section~5.2 is applied. When another overlapping-node group is encountered, BO is applied again. The detailed procedure of BO is summarized in Algorithm~2.
+    After the trajectory of the group is determined, the selected \(\mathrm{FOP}_j\) is used as the previous service point for the next planning step. When the next GN is independent, the single-node trajectory planning method in Section~\ref{sec:4.2} is applied. When another overlapping-node group is encountered, BO is applied again. The detailed procedure of BO is summarized in Algorithm~2.
 
     \begin{algorithm}[!t]
     \small
@@ -535,7 +541,7 @@ National Cheng Kung University \\
     
 \section{Simulation Setup}
 
-    The simulation area is set to \(2000 \times 2000~\mathrm{m}^2\). A total of 20 GNs are randomly and uniformly deployed in the simulation area, and a single UAV is used to collect data from all GNs. The data center is located at \((1000,1000)~\mathrm{m}\). The UAV departs from the data center, visits all GNs according to the generated visiting order, collects the required data from each GN, and returns to the data center after completing the mission. For each data size, 200 independent simulation runs are conducted with different random GN deployments. The reported MCT and flight distance results are the average values over these 200 runs. The required data amount of each GN is denoted by \(C\). The data amount is set to \(C\in\{1,2,4,8,16,32\}~\mathrm{MB}\). Table~6.1 lists the main simulation parameters used in the performance evaluation.
+    The simulation area is set to \(2000 \times 2000~\mathrm{m}^2\). A total of 20 GNs are randomly and uniformly deployed in the simulation area, and a single UAV is used to collect data from all GNs. The data center is located at \((1000,1000)~\mathrm{m}\). The UAV departs from the data center, visits all GNs according to the generated visiting order, collects the required data from each GN, and returns to the data center after completing the mission. For each data size, 200 independent simulation runs are conducted with different random GN deployments. The reported MCT and flight distance results are the average values over these 200 runs. The required data amount of each GN is denoted by \(C\). The data amount is set to \(C\in\{1,2,4,8,16,32\}~\mathrm{MB}\). Table~\ref{tab:simulation-parameters} lists the main simulation parameters used in the performance evaluation.
 
     Three schemes are compared in the simulation. The first scheme is the Convex shortest path, which computes the shortest geometric path passing through the communication region of each GN. This scheme is used as a geometric path baseline because its main purpose is to reduce the flight distance through the GN communication regions. The second scheme is the V-shaped scheme, which adopts the V-shaped data collection trajectory. This scheme considers the trajectory inside the communication region of each GN and adjusts the UAV service trajectory according to the data amount. The third scheme is the proposed RPA-BO scheme. This scheme uses reference-path attractors to provide global geometric guidance during local trajectory planning and applies the Boundary-Overlap Strategy to handle consecutive overlapping GN communication regions. When adjacent communication regions overlap, the UAV can select a switching point inside the overlapping region instead of leaving one communication boundary and entering another. For a fair comparison, the three schemes are evaluated under the same GN deployment and the same visiting order in each simulation run. Therefore, the differences in MCT and flight distance mainly result from the trajectory planning and data collection strategy adopted by each scheme.
 
@@ -566,7 +572,7 @@ National Cheng Kung University \\
 
 
 \section{Performance Comparison}
-    Fig.~\ref{fig:initial_routes} shows the initial trajectory of the UAV in the 2 km กั 2 km area. In this simulation scenario, 20 GNs are randomly and uniformly deployed in the area. By calculation, the communication radius (D) is approximately equal to 200 m. The UAV directly visits the center of each GN according to the visiting order. This trajectory is used to illustrate the GN distribution and the visiting order of the UAV before applying the proposed trajectory design.
+    Fig.~\ref{fig:initial_routes} shows the initial trajectory of the UAV in the \(2000 \times 2000~\mathrm{m}^2\) area. In this simulation scenario, 20 GNs are randomly and uniformly deployed in the area. By calculation, the communication radius (D) is approximately equal to 200 m. The UAV directly visits the center of each GN according to the visiting order. This trajectory is used to illustrate the GN distribution and the visiting order of the UAV before applying the proposed trajectory design.
     \begin{figure*}[!t]
 		\centering
 		\includegraphics[width=0.7\textwidth]{./figures/run_167_initial_routes.png}
