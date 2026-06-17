@@ -211,16 +211,16 @@ National Cheng Kung University \\
 		\label{fig:uav_data_collection}
 	\end{figure*}
 
-    The MCT of the UAV is obtained by accumulating the service time required for all GNs. For each GN, the service time consists of the flight time required to reach its communication region and the data collection time spent within that region. The index \(i\) follows the service sequence along the UAV trajectory. The GN visiting sequence is first determined by a genetic algorithm (GA), and the proposed method plans the complete UAV trajectory based on this sequence. As shown in Fig.~\ref{fig:uav_data_collection}, GN \(g_i\) is served independently, whereas GN \(g_{i+1}\) and GN \(g_{i+2}\) share an overlapping communication region.
+    The MCT of the UAV is obtained by summing the service time of all GNs and the return time to the data center. For each GN, the service time consists of the flight time required to reach its communication region and the data collection time spent within that region. The index \(i\) follows the service sequence along the UAV trajectory. The GN visiting sequence is first determined by a genetic algorithm (GA). The proposed method then plans the complete UAV trajectory based on this sequence. As shown in Fig.~\ref{fig:uav_data_collection}, GN \(g_i\) is served independently, whereas GN \(g_{i+1}\) and GN \(g_{i+2}\) share an overlapping communication region.
 	
-    UAV service trajectory is described by three key points: the flying-in point \(\mathrm{FIP}_i\), the optimal hovering or turning point \(\mathrm{OH}_i\), and the flying-out point \(\mathrm{FOP}_i\). The UAV first flies from the previous service point to \(\mathrm{FIP}_i\), and this flight duration is denoted by \(t_{n_i}\). After entering the communication region of GN \(g_i\), the UAV collects data while moving from \(\mathrm{FIP}_i\) to \(\mathrm{FOP}_i\) through \(\mathrm{OH}_i\). The corresponding data collection time is denoted by \(t_{c_i}\).
+    The service trajectory of GN \(g_i\) is described by three key points: the flying-in point \(\mathrm{FIP}_i\), the optimal hovering or turning point \(\mathrm{OH}_i\), and the flying-out point \(\mathrm{FOP}_i\). The UAV first flies from the previous service point to \(\mathrm{FIP}_i\). This flight duration is denoted by \(t_{n_i}\). After entering the communication region of GN \(g_i\), the UAV collects data while moving from \(\mathrm{FIP}_i\) to \(\mathrm{FOP}_i\) through \(\mathrm{OH}_i\). The corresponding data collection time is denoted by \(t_{c_i}\).
 
-    When the communication regions of two consecutive GNs do not overlap, the UAV enters and leaves the communication region of each GN through its own FIP and FOP, respectively. In this case, \(\mathrm{FIP}_i\) and \(\mathrm{FOP}_i\) are located on the boundary of the communication region with radius \(D\), and the data collection trajectory of GN \(g_i\) is represented as
+    When the communication regions of two consecutive GNs do not overlap, the UAV enters and leaves the communication region of each GN through its own FIP and FOP, respectively. In this case, \(\mathrm{FIP}_i\) and \(\mathrm{FOP}_i\) are located on the boundary of the communication region with radius \(D\). The data collection trajectory of GN \(g_i\) is represented as
     \begin{equation}
         \mathrm{FIP}_i \rightarrow \mathrm{OH}_i \rightarrow \mathrm{FOP}_i.
     \end{equation}
 
-    When the communication regions of GN \(g_{i+1}\) and GN \(g_{i+2}\) overlap, the service transition between the two GNs is represented by a common point selected from the overlapping region. Therefore, the FOP of GN \(g_{i+1}\) and the FIP of GN \(g_{i+2}\) are not forced to lie on the boundaries of their respective communication regions. To describe this service transition, this thesis introduces an overlap switching point, denoted by \(P^{\mathrm{sw}}_{i+1,i+2}\). The switching point satisfies
+    When the communication regions of GN \(g_{i+1}\) and GN \(g_{i+2}\) overlap, the service transition between the two GNs can be performed within the overlapping region. Therefore, the FOP of GN \(g_{i+1}\) and the FIP of GN \(g_{i+2}\) are not restricted to the boundaries of their respective communication regions. To describe this transition, this thesis defines an overlap switching point, denoted by \(P^{\mathrm{sw}}_{i+1,i+2}\). The switching point satisfies
     \begin{equation}
         P^{\mathrm{sw}}_{i+1,i+2} \in D_{i+1} \cap D_{i+2}
     \end{equation}
@@ -229,11 +229,11 @@ National Cheng Kung University \\
         \mathrm{FOP}_{i+1}=P^{\mathrm{sw}}_{i+1,i+2}=\mathrm{FIP}_{i+2}.
     \end{equation}
 
-    The service trajectory across the overlapping communication regions of GN \(g_{i+1}\) and GN \(g_{i+2}\) can be represented as
+    The service trajectory across the overlapping communication regions of GN \(g_{i+1}\) and GN \(g_{i+2}\) is represented as
     \begin{equation}
         \mathrm{FIP}_{i+1} \rightarrow \mathrm{OH}_{i+1} \rightarrow P^{\mathrm{sw}}_{i+1,i+2} \rightarrow \mathrm{OH}_{i+2} \rightarrow \mathrm{FOP}_{i+2}.
     \end{equation} 
-    This representation indicates that the UAV completes the data collection of GN \(g_{i+1}\) before reaching the switching point, and then continues the data collection of GN \(g_{i+2}\) after passing through the same point. This setting keeps the trajectory continuous and allows the UAV to complete the service transition within the overlapping communication region, thereby avoiding unnecessary boundary departure and re-entry between consecutive GNs. For a group of consecutive overlapping GNs, the same concept is applied by defining an overlap switching point between each pair of adjacent GNs in the group.
+    The UAV completes the data collection of GN \(g_{i+1}\) exactly upon reaching the switching point and begins serving GN \(g_{i+2}\) at the same point. This setting keeps the service trajectory continuous across the overlapping communication regions. For a group of consecutive overlapping GNs, an overlap switching point is defined between each adjacent GN pair in the group.
 
     Except for hovering-based data collection, the UAV flies at the maximum speed \(v_{\max}\). Therefore, the flight time is proportional to the corresponding flight distance. For the flight segment from the previous service point to \(\mathrm{FIP}_i\), the flight time \(t_{n_i}\) is expressed as
     \begin{equation}
