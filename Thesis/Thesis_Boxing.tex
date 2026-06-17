@@ -243,14 +243,13 @@ National Cheng Kung University \\
     \begin{equation}
         d_{i1}=\left\|\mathrm{FIP}_i-\mathrm{FOP}_{i-1}\right\|.
     \end{equation}
-
-    For \(i=1\), \(\mathrm{FOP}_0\) denotes the data center. If GN \(g_i\) and the previously served GN overlap, \(\mathrm{FIP}_i\) can be the corresponding overlap switching point, and the fly-in distance is adjusted accordingly. After completing the data collection task of the last GN, the UAV returns to the data center. The return time is given by
+    For \(i=1\), \(\mathrm{FOP}_0\) denotes the data center. If GN \(g_i\) and the previously served GN overlap, \(\mathrm{FIP}_i\) can be the corresponding overlap switching point. After completing the data collection task of the last GN, the UAV returns to the data center. The return time is given by
     \begin{equation}
         t^r=\frac{\left\|\mathrm{DC}-\mathrm{FOP}_N\right\|}{v_{\max}}
     \end{equation}
     where \(\mathrm{DC}\) denotes the data center.
 
-    The data collection time of GN \(g_i\), denoted by \(t_{c_i}\), is evaluated according to the adopted V-shaped collection trajectory. During this period, the UAV collects data while flying within the communication region. If the data collected during flight is insufficient, the UAV hovers directly above the corresponding GN to complete the remaining data collection. Let \(Q_i\) denote the required data amount of GN \(g_i\). The accumulated received data during the collection interval must satisfy
+    The data collection time of GN \(g_i\), denoted by \(t_{c_i}\), is evaluated according to the adopted V-shaped collection trajectory and the required data amount. If the data collected during flight is insufficient, the UAV hovers directly above GN \(g_i\) to collect the remaining data. Let \(Q_i\) denote the required data amount of GN \(g_i\). The accumulated received data during the collection interval must satisfy
     \begin{equation}
         \int_{0}^{t_{c_i}} R_i(t)\,dt \geq Q_i.
     \end{equation}
@@ -259,7 +258,7 @@ National Cheng Kung University \\
         T=\sum_{i=1}^{N}\left(t_{c_i}+t_{n_i}\right)+t^r.
     \end{equation}
 
-    Let \(\mathcal{P}\) denote the set of service points associated with the UAV trajectory, including the FIPs, OHs, FOPs, and the overlap switching points when communication regions overlap. Based on the above definitions, the overall MCT reduction problem is formulated as
+    Let \(\mathcal{P}\) denote the set of service points associated with the UAV trajectory. This set includes the FIPs, OHs, FOPs, and overlap switching points when communication regions overlap. Based on the above definitions, the MCT reduction problem is formulated as
     \begin{subequations}
     \label{eq:p1}
     \begin{align}
@@ -280,9 +279,9 @@ National Cheng Kung University \\
     \end{align}
     \end{subequations}
 
-    Here, \(\mathcal{O}\) denotes the set of consecutive GN indices whose communication regions overlap, i.e., \(D_i \cap D_{i+1} \neq \emptyset\). Constraint~\eqref{eq:p1_snr} ensures that the received SNR satisfies the required threshold during data collection. Constraint~\eqref{eq:p1_points} requires the key service points of each GN to lie within the corresponding communication region. Constraint~\eqref{eq:p1_overlap} defines the feasible region of the overlap switching point. Constraint~\eqref{eq:p1_data} guarantees that the required data amount of each GN is collected.
+    Here, \(\mathcal{O}\) denotes the set of consecutive GN indices whose communication regions overlap, i.e., \(D_i \cap D_{i+1} \neq \emptyset\). Constraint~\eqref{eq:p1_snr} ensures that the received SNR satisfies the required threshold during data collection. Constraint~\eqref{eq:p1_points} requires the service points of each GN to lie within the corresponding communication region. Constraint~\eqref{eq:p1_overlap} defines the feasible region of the overlap switching point. Constraint~\eqref{eq:p1_data} guarantees that the UAV collects the required data amount from each GN.
 
-    Problem \textbf{P1} is difficult to solve directly because the flight trajectory and the data collection trajectory are coupled. The selection of service points in \(\mathcal{P}\) affects both the flight time \(t_{n_i}\) and the data collection time \(t_{c_i}\). Moreover, when consecutive communication regions overlap, the overlap switching points affect the continuity of the service trajectory across adjacent GNs. Therefore, this thesis addresses \textbf{P1} through two trajectory planning components in the proposed solution: single-node trajectory planning and overlapping-node group trajectory planning. The RPA mechanism provides reference-path attractors for both components, whereas the BO strategy is specifically applied to overlapping-node groups to determine feasible service switching points within overlapping communication regions.
+   Problem \textbf{P1} is difficult to solve directly because the flight trajectory and the data collection trajectory affect each other. The selection of service points in \(\mathcal{P}\) affects both the flight time \(t_{n_i}\) and the data collection time \(t_{c_i}\). Moreover, when consecutive communication regions overlap, the overlap switching points affect the continuity of the service trajectory between adjacent GNs. Therefore, this thesis addresses \textbf{P1} through two trajectory planning components in the proposed solution: single-node trajectory planning and overlapping-node group trajectory planning.
 
 %------------------------- Proposed Solution -------------------------%
 \chapter{Proposed Solution}\label{Chap:Proposed Solution}
