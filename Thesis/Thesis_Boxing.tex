@@ -331,9 +331,9 @@ National Cheng Kung University \\
 
     The attractor \(\mathbf{a}_i\) is selected as the first reference-path point that lies within the communication region of the \(i\)-th GN along the traveling direction. This early-entry selection preserves a longer available data collection interval along the reference path. Therefore, \(\mathbf{a}_i\) is used as the reference-path entry point associated with the \(i\)-th GN. The terminal attractor is set as the data center, \(\mathbf{a}_{N+1}=\mathbf{q}_0\).
 
-    The influence of the attractor can be explained by decomposing the flight-time term associated with the \(i\)-th GN. Let \(\mathbf{P}_i^{\mathrm{pre}}\) denote the point immediately before serving the \(i\)-th GN. The point \(\mathbf{P}_i^{\mathrm{pre}}\) can be the FOP of the previous GN, an overlap switching point, or the data center when \(i=1\). For a candidate \(\mathrm{FIP}_i\), the fly-in time is expressed as
+    The influence of the attractor can be explained by decomposing the flight-time term associated with the \(i\)-th GN. Let \(\mathrm{P}_i^{\mathrm{pre}}\) denote the point immediately before serving the \(i\)-th GN. The point \(\mathrm{P}_i^{\mathrm{pre}}\) can be the FOP of the previous GN, an overlap switching point, or the data center when \(i=1\). For a candidate \(\mathrm{FIP}_i\), the fly-in time is expressed as
     \begin{equation}
-        t_{n_i}^{\mathrm{in}}=\frac{\left\|\mathrm{FIP}_i-\mathbf{P}_i^{\mathrm{pre}}\right\|}{v_{\max}}.
+        t_{n_i}^{\mathrm{in}}=\frac{\left\|\mathrm{FIP}_i-\mathrm{P}_i^{\mathrm{pre}}\right\|}{v_{\max}}.
     \end{equation}
     After the data collection process of the \(i\)-th GN is completed, the outgoing flight direction is evaluated with respect to the next attractor \(\mathbf{a}_{i+1}\). The RPA-guided fly-out time is expressed as
     \begin{equation}
@@ -446,7 +446,7 @@ National Cheng Kung University \\
         \rightarrow
         \mathrm{FOP}_{i+2}.
     \end{equation}
-    In this sequence, \(\mathbf{P}^{\mathrm{sw}}_{i,i+1}\) is used as the exit point of \(g_i\) and the entry point of \(g_{i+1}\). Similarly, \(\mathbf{P}^{\mathrm{sw}}_{i+1,i+2}\) connects the service trajectories of \(g_{i+1}\) and \(g_{i+2}\). Therefore, the group is planned as a single service unit with one entry point and one exit point.
+    In this sequence, \(\mathrm{P}^{\mathrm{sw}}_{i,i+1}\) is used as the exit point of \(g_i\) and the entry point of \(g_{i+1}\). Similarly, \(\mathrm{P}^{\mathrm{sw}}_{i+1,i+2}\) connects the service trajectories of \(g_{i+1}\) and \(g_{i+2}\). Therefore, the group is planned as a single service unit with one entry point and one exit point.
 
     For each overlapping region, BO selects the switching point from a finite candidate set instead of searching over the entire continuous overlapping region. The candidate set is generated using two representative sampling directions. The first direction follows the line segment connecting the centers of the two adjacent GNs. Since different adjacent GN pairs may have different overlap depths. Therefore BO can adjust whether the service transition should occur earlier or later within the overlapping region. The second direction follows a perpendicular sampling line inside the overlapping region. This direction provides candidates with different inward depths within the overlapping region. Since different data amounts may require different collection depths, the perpendicular sampling line allows BO to adjust the switching location according to the data collection requirement. By combining these two representative directions, the T-shaped sampling method generates switching candidates for the overlapping region without searching all possible points in the continuous region.
 
@@ -455,9 +455,9 @@ National Cheng Kung University \\
         \mathcal{S}_m=
         \left[
         \mathrm{FIP}_i,
-        \mathbf{P}^{\mathrm{sw}}_{i,i+1},
+        \mathrm{P}^{\mathrm{sw}}_{i,i+1},
         \ldots,
-        \mathbf{P}^{\mathrm{sw}}_{j-1,j},
+        \mathrm{P}^{\mathrm{sw}}_{j-1,j},
         \mathrm{FOP}_j
         \right].
     \end{equation}
